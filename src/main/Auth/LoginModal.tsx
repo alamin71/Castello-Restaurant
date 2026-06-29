@@ -16,6 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 const COUNTRIES = [
     { code: "+354", flag: "🇮🇸", name: "Iceland" },
@@ -93,6 +94,7 @@ export default function LoginModal() {
             return;
         }
         login(phone, countryCode);
+        toast.success("otp verified! Login successful", { duration: 3000, closeButton: false });
         handleClose();
     }
 
@@ -193,13 +195,13 @@ export default function LoginModal() {
                         <div className="flex items-center justify-between">
                             <button
                                 onClick={() => { setStep("phone"); setError(""); setOtp(["", "", "", "", "", ""]); }}
-                                className="text-sm text-white/40 hover:text-white/70 underline transition-colors"
+                                className="text-sm text-white/40 hover:text-white/70 transition-colors cursor-pointer"
                             >
                                 ← Back
                             </button>
                             <button
                                 onClick={() => { setOtp(["", "", "", "", "", ""]); setError(""); otpRefs.current[0]?.focus(); }}
-                                className="text-sm text-secondary hover:text-secondary/70 underline transition-colors"
+                                className="text-sm text-secondary hover:text-secondary/70 transition-colors cursor-pointer"
                             >
                                 Resend OTP
                             </button>
