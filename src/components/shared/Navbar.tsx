@@ -13,6 +13,7 @@ import Image from "next/image"
 import { Button } from "../ui/button"
 import OrderCartSheet from "@/main/OrderCart/OrderCart"
 import { ProfileDropdown } from "@/main/Profile/ProfileDropdown"
+import { useAuth } from "@/context/AuthContext"
 
 const navItems = [
     { name: "Home", href: "/" },
@@ -24,11 +25,11 @@ const mobileNav = [
     { name: "Menu", href: "/menu" },
     { name: "Find a branch", href: "/find-a-branch" },
     { name: "Profile", href: "/profile" },
-
 ]
 
 export default function Navbar() {
     const pathname = usePathname()
+    const { isLoggedIn, openLoginModal } = useAuth()
 
     return (
         <nav className="bg-background sticky top-0 z-50 w-full text-white py-2">
@@ -60,18 +61,26 @@ export default function Navbar() {
                     })}
                 </div>
 
-                {/* Desktop Buttons */}
+                {/* Desktop Right Section */}
                 <div className="hidden md:flex items-center gap-4">
-                    {/* <Button className="px-6 py-5 bg-transparent">Log In</Button>
-                    <Button className="px-6 py-5 bg-[#EDEDED] text-background">Register</Button> */}
-                    <OrderCartSheet />
-                    <ProfileDropdown />
+                    {isLoggedIn ? (
+                        <>
+                            <OrderCartSheet />
+                            <ProfileDropdown />
+                        </>
+                    ) : (
+                        <Button
+                            onClick={openLoginModal}
+                            className="px-6 py-5 bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-full"
+                        >
+                            Log in
+                        </Button>
+                    )}
                 </div>
 
                 {/* Mobile Menu */}
                 <div className="md:hidden flex items-center gap-3">
-                    {/* Cart visible on mobile outside sheet */}
-                    <OrderCartSheet />
+                    {isLoggedIn && <OrderCartSheet />}
 
                     <Sheet>
                         <SheetTrigger asChild>
@@ -108,19 +117,19 @@ export default function Navbar() {
                                     })}
                                 </div>
 
-                                {/* Mobile Auth Buttons */}
-                                <div className="mt-8 flex flex-col gap-3">
-                                    <SheetClose asChild>
-                                        <Button className="w-full py-5 bg-transparent border border-white/30 text-white hover:bg-white/10">
-                                            Log In
-                                        </Button>
-                                    </SheetClose>
-                                    <SheetClose asChild>
-                                        <Button className="w-full py-5 bg-[#EDEDED] text-black hover:bg-white">
-                                            Register
-                                        </Button>
-                                    </SheetClose>
-                                </div>
+                                {/* Mobile Auth */}
+                                {!isLoggedIn && (
+                                    <div className="mt-8 flex flex-col gap-3">
+                                        <SheetClose asChild>
+                                            <Button
+                                                onClick={openLoginModal}
+                                                className="w-full py-5 bg-transparent border border-white/30 text-white hover:bg-white/10"
+                                            >
+                                                Log in
+                                            </Button>
+                                        </SheetClose>
+                                    </div>
+                                )}
                             </div>
                         </SheetContent>
                     </Sheet>

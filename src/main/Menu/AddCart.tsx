@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 import {
     Dialog,
@@ -143,6 +144,7 @@ function ToppingCard({
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AddCartDialog() {
+    const { isLoggedIn, openLoginModal } = useAuth();
     const [open, setOpen] = useState(false);
 
     const [selectedSize, setSelectedSize] = useState(1);
@@ -190,7 +192,10 @@ export default function AddCartDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="h-10 w-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer">
+                <button
+                    className="h-10 w-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer"
+                    onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
+                >
                     <Plus className="h-5 w-5" />
                 </button>
             </DialogTrigger>

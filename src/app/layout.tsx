@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import ClientLayout from "./ClientLayout";
 
 const mabryPro = localFont({
   src: [
@@ -51,11 +50,9 @@ export default function RootLayout({
       className={`${mabryPro.variable} h-full antialiased`}
     >
       <body>
-        <Navbar />
-        <div>
+        <ClientLayout>
           {children}
-        </div>
-        <Footer />
+        </ClientLayout>
       </body>
     </html>
   );
