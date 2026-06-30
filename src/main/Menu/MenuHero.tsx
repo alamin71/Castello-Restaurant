@@ -6,13 +6,14 @@ const MenuHero = () => {
       className="relative min-h-50 md:min-h-60 lg:min-h-70 py-12 md:py-14 lg:py-16 flex items-center overflow-hidden"
       style={{
         backgroundImage: "url('/assets/Menu Banner.png')",
-        backgroundSize: "cover",
+        backgroundSize: "100% 100%",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Text content — constrained width so it never collides with the images */}
+      {/* Text content */}
       <div className="relative z-10 w-full md:max-w-5xl mx-auto px-6 sm:px-10 lg:px-16">
-        <div className="space-y-4 max-w-xs sm:max-w-sm lg:max-w-lg  lg:text-left text-white">
+        <div className="space-y-4 max-w-xs sm:max-w-sm lg:max-w-lg lg:text-left text-white">
           <div className="h-0.5 bg-secondary w-1/3 md:mx-auto lg:mx-0" />
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold pb-1">

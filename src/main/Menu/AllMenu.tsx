@@ -76,7 +76,7 @@ const AllMenu = () => {
     return (
         <section>
             {/* Sticky category bar */}
-            <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10 w-full px-4 py-1">
+            <div className="sticky top-[80px] z-40 bg-background/95 backdrop-blur-md border-b border-white/10 w-full px-4 py-1">
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex items-center gap-2 sm:gap-4 w-max mx-auto p-2">
                         {categories.map((cat) => {
@@ -113,10 +113,10 @@ const AllMenu = () => {
             </div>
 
             {/* Sections */}
-            <div ref={(el) => { sectionRefs.current["offers"] = el; }} style={{ scrollMarginTop: "90px" }}>
+            <div ref={(el) => { sectionRefs.current["offers"] = el; }} style={{ scrollMarginTop: "170px" }}>
                 <SpecialOffer />
             </div>
-            <div ref={(el) => { sectionRefs.current["pizzas"] = el; }} style={{ scrollMarginTop: "90px" }}>
+            <div ref={(el) => { sectionRefs.current["pizzas"] = el; }} style={{ scrollMarginTop: "170px" }}>
                 <Pizzas />
             </div>
         </section>
