@@ -143,7 +143,7 @@ function ToppingCard({
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function AddCartDialog() {
+export default function AddCartDialog({ variant = "icon" }: { variant?: "icon" | "full" }) {
     const { isLoggedIn, openLoginModal } = useAuth();
     const [open, setOpen] = useState(false);
 
@@ -192,12 +192,22 @@ export default function AddCartDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button
-                    className="h-10 w-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer"
-                    onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
-                >
-                    <Plus className="h-5 w-5" />
-                </button>
+                {variant === "full" ? (
+                    <button
+                        className="w-full h-10 flex items-center justify-center gap-2 rounded-xl bg-secondary text-white text-sm font-semibold hover:bg-secondary/90 active:scale-95 transition-all cursor-pointer"
+                        onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add to Cart
+                    </button>
+                ) : (
+                    <button
+                        className="h-10 w-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer"
+                        onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
+                    >
+                        <Plus className="h-5 w-5" />
+                    </button>
+                )}
             </DialogTrigger>
             <DialogTitle className="sr-only"></DialogTitle>
             <DialogContent className="max-h-[92vh] md:w-full w-11/12 max-w-3xl! overflow-hidden border-0 bg-background shadow-md shadow-white/10 p-0 text-white">

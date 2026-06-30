@@ -3,63 +3,77 @@
 import Image from "next/image";
 import AddCartDialog from "@/main/Menu/AddCart";
 
-export interface FoodCardProps {
-    title: string,
-    description: string,
-    price: string | number,
-    image: string,
-    badge?: string,
-    onAdd?: () => void,
-};
+interface SizePrice {
+    label: string;
+    price: number;
+    originalPrice?: number;
+}
 
-const FoodCard: React.FC<FoodCardProps> = ({
-    title,
-    description,
-    price,
-    image,
-    badge,
-    // onAdd,
-}) => {
+export interface FoodCardProps {
+    title: string;
+    description: string;
+    price?: string | number;
+    sizes?: SizePrice[];
+    image: string;
+    badge?: string;
+    onAdd?: () => void;
+}
+
+const FoodCard: React.FC<FoodCardProps> = ({ title, description, price, sizes, image, badge }) => {
     return (
-        <section className="border border-[#3B3B3B] rounded-3xl overflow-hidden">
-            {/* Image section */}
+        <div className="flex flex-col rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] overflow-hidden">
+            {/* Image */}
             <div
-                className="relative w-full h-fit bg-cover bg-center flex items-center justify-center"
-                style={{
-                    backgroundImage: `url(/assets/FoodCardBg.png)`,
-                }}
+                className="relative w-full h-44 flex items-center justify-center"
+                style={{ backgroundImage: `url(/assets/FoodCardBg.png)`, backgroundSize: "cover", backgroundPosition: "center" }}
             >
                 <Image
                     src={image}
                     alt={title}
-                    width={180}
-                    height={180}
-                    className="object-contain py-6"
+                    width={160}
+                    height={160}
+                    className="object-contain drop-shadow-xl"
                 />
-                {/* badge */}
                 {badge && (
-                    <div className="absolute top-0 left-0 bg-secondary rounded-br-full px-4 uppercase text-white py-2 text-sm">
+                    <span className="absolute top-3 right-3 bg-secondary text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
                         {badge}
-                    </div>
+                    </span>
                 )}
             </div>
-            {/* Content */}
-            <div className="p-3 flex flex-col justify-center items-center">
-                <h2 className="text-white font-bold text-lg">{title}</h2>
-                <p className="text-gray-300 text-sm text-center w-3/4">{description}</p>
-            </div>
 
-            {/* Footer */}
-
-            <div className="flex justify-between items-center p-3">
-                <div>
-                    <h3 className="text-white text-xl font-semibold">{price} ISK</h3>
-                    <p className="text-[#B5B5B5] text-sm">Start from</p>
+            {/* Body */}
+            <div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-3">
+                {/* Title + Description */}
+                <div className="text-center">
+                    <h2 className="text-white font-bold text-base leading-snug">{title}</h2>
+                    <p className="text-[#888] text-xs mt-1 leading-relaxed line-clamp-2">{description}</p>
                 </div>
 
-                <AddCartDialog />
+                {/* Prices */}
+                <div className="mt-auto flex flex-col gap-2">
+                    {sizes && sizes.length > 0 ? (
+                        <div className="flex justify-between gap-1">
+                            {sizes.map((s) => (
+                                <div key={s.label} className="flex flex-col">
+                                    <span className="text-[#666] text-[11px]">{s.label}</span>
+                                    <span className="text-white font-bold text-sm">{s.price.toLocaleString()} kr.</span>
+                                    {s.originalPrice && (
+                                        <span className="text-[#555] text-[11px] line-through">{s.originalPrice.toLocaleString()} kr.</span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-[#888] text-xs">Start from</p>
+                            <p className="text-white font-bold text-lg leading-none mt-0.5">{price} kr</p>
+                        </div>
+                    )}
+
+                    <AddCartDialog variant="full" />
+                </div>
             </div>
-        </section>
+        </div>
     );
 };
 
