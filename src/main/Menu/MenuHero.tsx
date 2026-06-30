@@ -3,7 +3,7 @@ import Image from "next/image";
 const MenuHero = () => {
   return (
     <section
-      className="relative min-h-50 md:min-h-60 lg:min-h-70 py-12 md:py-14 lg:py-16 flex items-center overflow-hidden"
+      className="relative min-h-50 md:min-h-72 lg:min-h-96 py-12 md:py-14 lg:py-16 flex items-center overflow-hidden"
       style={{
         backgroundImage: "url('/assets/Menu Banner.png')",
         backgroundSize: "100% 100%",
