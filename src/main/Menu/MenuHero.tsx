@@ -12,9 +12,9 @@ const MenuHero = () => {
       }}
     >
       {/* Text content */}
-      <div className="relative z-10 w-full md:max-w-5xl mx-auto px-6 sm:px-10 lg:px-16">
-        <div className="space-y-4 max-w-xs sm:max-w-sm lg:max-w-lg lg:text-left text-white">
-          <div className="h-0.5 bg-secondary w-1/3 md:mx-auto lg:mx-0" />
+      <div className="relative z-10 w-10/12 mx-auto">
+        <div className="space-y-4 max-w-xs sm:max-w-sm lg:max-w-lg text-left text-white">
+          <div className="h-0.5 bg-secondary w-1/3" />
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold pb-1">
             Taste the Flavor
