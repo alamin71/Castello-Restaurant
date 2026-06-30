@@ -225,7 +225,7 @@ export default function LoginModal() {
 
             {/* Header */}
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-white">Verify OTP</h2>
+              <h2 className="text-2xl pt-4 font-bold text-white">Verify OTP</h2>
               <p className="text-sm text-white/50 mt-1">
                 Code sent to {selectedCountry.flag} {countryCode} {phone}
               </p>
