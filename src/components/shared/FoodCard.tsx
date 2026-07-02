@@ -69,16 +69,16 @@ const FoodCard: React.FC<FoodCardProps> = ({
         {/* Prices */}
         <div className="mt-auto flex flex-col gap-6">
           {sizes && sizes.length > 0 ? (
-            <div className="flex">
+            <div className="flex my-2">
               {sizes.map((s, idx) => (
                 <div
                   key={s.label}
-                  className={`flex flex-col items-center justify-center flex-1 py-2 px-1 ${idx < sizes.length - 1 ? "border-r border-[#2e2e2e]" : ""}`}
+                  className={`flex flex-col items-center justify-center flex-1 py-3 px-1 ${idx < sizes.length - 1 ? "border-r border-[#2e2e2e]" : ""}`}
                 >
                   <span className="text-[#666] text-xs font-normal leading-none mb-1">
                     {s.label}
                   </span>
-                  <span className="text-white font-bold text-base leading-none">
+                  <span className="text-white font-bold text-base leading-none my-1.5">
                     {s.price.toLocaleString()} kr.
                   </span>
                   {s.originalPrice && (
