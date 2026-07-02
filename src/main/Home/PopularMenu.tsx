@@ -59,7 +59,7 @@ const PopularMenu = () => {
     return (
         <section className='w-10/12 mx-auto '>
             <h2 className='text-white text-5xl text-center font-bold my-12'>Popular Menu</h2>
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+            <div className='grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4'>
                 {foodItems.map((food) => (
                     <FoodCard
                         key={food.title}

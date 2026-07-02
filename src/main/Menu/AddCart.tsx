@@ -194,10 +194,9 @@ export default function AddCartDialog({ variant = "icon" }: { variant?: "icon" |
             <DialogTrigger asChild>
                 {variant === "full" ? (
                     <button
-                        className="w-full h-10 flex items-center justify-center gap-2 rounded-xl bg-secondary text-white text-sm font-semibold hover:bg-secondary/90 active:scale-95 transition-all cursor-pointer"
+                        className="w-full h-10 flex items-center justify-center rounded-xl bg-secondary text-white text-sm font-semibold hover:bg-secondary/90 active:scale-95 transition-all cursor-pointer"
                         onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
                     >
-                        <Plus className="h-4 w-4" />
                         Add to Cart
                     </button>
                 ) : (
