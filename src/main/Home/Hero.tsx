@@ -33,27 +33,28 @@ const Hero = () => {
     return (
         <section>
             <Carousel />
-            <div className="py-12">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-10/12 mx-auto">
+            <div className="bg-[#1a1a1a] py-6 md:py-14">
+                <div className="grid grid-cols-3 w-11/12 md:w-10/12 mx-auto divide-x divide-white/10">
                     {services.map((service) => (
                         <div
                             key={service.id}
-                            className="flex flex-col items-center gap-2 transition-opacity duration-300"
+                            className="flex flex-col items-center text-center gap-1.5 md:gap-3 px-2 md:px-8"
                         >
-                            <div className="transition-transform duration-300">
+                            <div>
                                 <Image
                                     src={service.icon}
                                     alt={service.title}
                                     width={54}
                                     height={48}
+                                    className="w-7 h-6 md:w-14 md:h-12"
                                 />
                             </div>
 
-                            <h3 className="text-white text-lg font-semibold tracking-wide">
+                            <h3 className="text-white text-[10px] leading-tight sm:text-sm md:text-xl font-bold tracking-wide">
                                 {service.title}
                             </h3>
 
-                            <p className="text-[#B5B5B5] text-base leading-relaxed">
+                            <p className="text-[#B5B5B5] hidden md:block md:text-sm lg:text-base leading-relaxed">
                                 {service.description}
                             </p>
                         </div>
