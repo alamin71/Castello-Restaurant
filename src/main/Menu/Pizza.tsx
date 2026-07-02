@@ -36,7 +36,7 @@ const Pizzas = () => {
                 </button>
             </div>
 
-            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
+            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(45vw,280px),1fr))]">
                 {PIZZAS.map((pizza, i) => (
                     <FoodCard
                         key={i}

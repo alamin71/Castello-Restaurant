@@ -6,7 +6,7 @@ const SpecialOffer = () => {
       <h2 className="text-white text-5xl text-left font-bold mb-12 mt-12">
         Special Offers
       </h2>
-      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(45vw,280px),1fr))]">
         {[1, 2, 3, 4, 5, 6, 7].map((_, i) => (
           <FoodCard
             key={i}
