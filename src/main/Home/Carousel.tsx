@@ -17,7 +17,7 @@ export default function Carousel() {
                 disableOnInteraction: false,
             }}
             loop={true}
-            className="h-[50vh] sm:h-[55vh] md:h-[75vh] lg:h-[82vh] w-full custom-swiper"
+            className="w-full aspect-1920/631 md:aspect-auto md:h-full custom-swiper"
         >
             {[1, 2, 3, 4, 5, 6].map((_, i) => (
                 <SwiperSlide key={i} className="relative w-full h-full overflow-hidden">

@@ -31,9 +31,9 @@ const services: Service[] = [
 
 const Hero = () => {
     return (
-        <section>
+        <section className="md:grid md:grid-rows-[1fr_auto] md:h-[calc(100vh-80px)]">
             <Carousel />
-            <div className="bg-[#1a1a1a] py-6 md:py-14">
+            <div className="bg-[#1a1a1a] py-4 md:py-6">
                 <div className="grid grid-cols-3 w-11/12 md:w-10/12 mx-auto divide-x divide-white/10">
                     {services.map((service) => (
                         <div
