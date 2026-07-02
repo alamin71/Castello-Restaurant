@@ -44,7 +44,7 @@ export function Services() {
     ];
 
     return (
-        <section className="relative w-full">
+        <section className="relative w-full max-w-360 mx-auto">
             {/*
               * Total scroll height:
               *   - mobile: each card occupies 100svh (safe viewport height, avoids mobile browser chrome issues)
@@ -110,7 +110,7 @@ export function Services() {
                 >
                     {service.map((s, index) => (
                         <div key={index} className="sticky top-0 h-[65vh] flex items-center">
-                            <section className="w-10/12 mx-auto bg-primary text-white rounded-lg p-8 flex items-center justify-between gap-8">
+                            <section className="w-11/12 mx-auto max-w-300 bg-primary text-white rounded-lg p-8 flex items-center justify-between gap-8">
                                 <div className="space-y-4 flex-1">
                                     <div className="h-0.5 bg-secondary w-1/3" />
                                     <h2 className="text-5xl font-bold pb-1">{s.title}</h2>

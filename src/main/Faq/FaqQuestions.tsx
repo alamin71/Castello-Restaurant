@@ -64,7 +64,7 @@ const FaqQuestions = () => {
     ];
 
     return (
-        <div className="w-10/12 mx-auto">
+        <div className="w-11/12 md:w-10/12 mx-auto">
             <section className="flex flex-col justify-center items-center text-white my-16">
                 <div className="h-0.5 bg-secondary w-1/4" />
                 <h2 className="text-5xl font-bold pb-4 mt-4">Frequently Asked Questions</h2>

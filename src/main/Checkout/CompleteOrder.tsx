@@ -105,7 +105,7 @@ export default function CompleteOrder() {
 
             {/* ── PAGE HEADER ── */}
             <div className="border-b border-white/20">
-                <div className="mx-auto w-10/12 px-4 sm:px-6 py-4 sm:py-5">
+                <div className="mx-auto w-11/12 md:w-10/12 px-4 sm:px-6 py-4 sm:py-5">
                     <div className="flex items-center gap-3">
                         <div className="h-1 w-10 sm:w-16 rounded-full bg-secondary" />
                         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
@@ -121,7 +121,7 @@ export default function CompleteOrder() {
              *  tablet  (sm)   : 2 cols — cart | details+payment stacked
              *  desktop (lg+)  : 3 cols — cart | details | payment
              */}
-            <div className="mx-auto md:w-10/12 px-4 sm:px-6 py-6
+            <div className="mx-auto w-11/12 md:w-10/12 px-4 sm:px-6 py-6
                             grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
 
                 {/* ══ LEFT — CART ITEMS ══ */}

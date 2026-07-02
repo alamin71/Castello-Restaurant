@@ -57,7 +57,7 @@ export function AllBranches() {
     return (
         <section className="my-10">
             <h2 className='text-white text-3xl md:text-5xl text-center font-bold mt-0 mb-12 px-4'>Our Branches At a Glance</h2>
-            <div className="w-10/12 mx-auto grid md:grid-cols-3 gap-6">
+            <div className="w-11/12 md:w-10/12 mx-auto grid md:grid-cols-3 gap-6">
                 {locations.map((loc) => (
                     <div
                         key={loc.id}

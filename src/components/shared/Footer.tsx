@@ -6,7 +6,7 @@ import { FaTwitter } from 'react-icons/fa6';
 
 export default function Footer() {
     return (
-        <footer className="md:w-10/12 mx-auto py-12 bg-primary text-white rounded-t-4xl">
+        <footer className="w-11/12 mx-auto max-w-300 py-12 bg-primary text-white rounded-t-4xl">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-10 px-4">
 
                 {/* Logo */}

@@ -6,7 +6,7 @@ const Targets = () => {
         <main>
             {/* our story */}
             <section className='bg-primary'>
-                <div className="w-11/12 lg:w-10/12 mx-auto text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-20">
+                <div className="w-11/12 md:w-10/12 mx-auto text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-20">
 
                     <div className="space-y-4 flex-1 text-center lg:text-left">
                         <div className="h-0.5 bg-secondary w-32 sm:w-48 mx-auto lg:mx-0" />
@@ -38,7 +38,7 @@ const Targets = () => {
 
             {/* our mission */}
             <section>
-                <div className="w-11/12 lg:w-10/12 mx-auto text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row-reverse items-center justify-between gap-10 lg:gap-20">
+                <div className="w-11/12 md:w-10/12 mx-auto text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row-reverse items-center justify-between gap-10 lg:gap-20">
 
                     <div className="space-y-4 flex-1 text-center lg:text-left">
                         <div className="h-0.5 bg-secondary w-32 sm:w-48 mx-auto lg:mx-0" />
@@ -66,7 +66,7 @@ const Targets = () => {
 
             {/* our vision */}
             <section className='bg-[#222222]'>
-                <div className="w-11/12 lg:w-10/12 mx-auto text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-20">
+                <div className="w-11/12 md:w-10/12 mx-auto text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-20">
 
                     <div className="space-y-4 flex-1 text-center lg:text-left">
                         <div className="h-0.5 bg-secondary w-32 sm:w-48 mx-auto lg:mx-0" />

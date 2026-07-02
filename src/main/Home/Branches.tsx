@@ -1,6 +1,7 @@
 import { MapPin, Phone, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import Container from "@/components/shared/Container";
 
 interface LocationCard {
     id: string;
@@ -42,7 +43,7 @@ export function Branches() {
     return (
         <section>
             <h2 className='text-white text-5xl text-center font-bold mt-0 mb-12'>Branches</h2>
-            <div className="w-10/12 mx-auto grid md:grid-cols-3 gap-6">
+            <Container className="grid md:grid-cols-3 gap-6">
                 {locations.map((loc) => (
                     <div
                         key={loc.id}
@@ -88,7 +89,7 @@ export function Branches() {
                         </div>
                     </div>
                 ))}
-            </div>
+            </Container>
             <div className='text-center py-12'>
                 <Link href="/find-a-branch" className='text-white text-2xl font-bold tracking-wide'>Visit our all branches</Link>
             </div>

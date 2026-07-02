@@ -74,7 +74,7 @@ const AllMenu = () => {
     };
 
     return (
-        <section>
+        <section className="w-full max-w-360 mx-auto">
             {/* Sticky category bar */}
             <div className="sticky top-[80px] z-40 bg-background/95 backdrop-blur-md border-b border-white/10 w-full px-4 py-1">
                 <ScrollArea className="w-full whitespace-nowrap">

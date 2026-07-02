@@ -14,6 +14,7 @@ import { Button } from "../ui/button"
 import OrderCartSheet from "@/main/OrderCart/OrderCart"
 import { ProfileDropdown } from "@/main/Profile/ProfileDropdown"
 import { useAuth } from "@/context/AuthContext"
+import Container from "./Container"
 
 const navItems = [
     { name: "Home", href: "/" },
@@ -33,7 +34,7 @@ export default function Navbar() {
 
     return (
         <nav className="bg-background sticky top-0 z-50 w-full text-white py-2">
-            <div className="w-10/12 mx-auto py-2 flex items-center justify-between">
+            <Container className="py-2 flex items-center justify-between">
 
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
@@ -135,7 +136,7 @@ export default function Navbar() {
                     </Sheet>
                 </div>
 
-            </div>
+            </Container>
         </nav>
     )
 }

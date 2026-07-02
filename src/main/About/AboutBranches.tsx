@@ -69,7 +69,7 @@ export default function AboutBranches() {
     ];
 
     return (
-        <div className='relative w-10/12 mx-auto select-none py-16'>
+        <div className='relative w-11/12 md:w-10/12 mx-auto select-none py-16'>
             <section className="flex flex-col justify-center items-center text-white my-16">
                 <div className="h-0.5 bg-secondary w-48" />
                 <h2 className="text-5xl font-bold pb-4 mt-4">Our Branches</h2>

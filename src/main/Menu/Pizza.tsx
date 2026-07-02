@@ -1,13 +1,13 @@
 import Image from "next/image";
 import FoodCard from "@/components/shared/FoodCard";
+import Container from "@/components/shared/Container";
 import { PIZZAS } from "./pizzaData";
 
 const Pizzas = () => {
     return (
-        <section className="w-10/12 mx-auto mb-12">
+        <Container className="mb-12">
             <h2 className="text-white text-5xl font-bold my-12">Pizzas</h2>
 
-            {/* Special pizza options */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <button className="flex items-center gap-4 bg-[#1a1a1a] border border-[#333] rounded-2xl p-5 text-left hover:border-[#555] transition-colors group">
                     <div className="shrink-0 w-14 h-14 flex items-center justify-center">
@@ -36,7 +36,7 @@ const Pizzas = () => {
                 </button>
             </div>
 
-            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(45vw,280px),1fr))]">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {PIZZAS.map((pizza, i) => (
                     <FoodCard
                         key={i}
@@ -48,7 +48,7 @@ const Pizzas = () => {
                     />
                 ))}
             </div>
-        </section>
+        </Container>
     );
 };
 

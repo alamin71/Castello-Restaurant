@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Carousel from "./Carousel";
+import Container from "@/components/shared/Container";
 
 interface Service {
     id: number;
@@ -31,10 +32,10 @@ const services: Service[] = [
 
 const Hero = () => {
     return (
-        <section className="md:grid md:grid-rows-[1fr_auto] md:h-[calc(100vh-80px)]">
+        <section className="w-full max-w-360 mx-auto md:grid md:grid-rows-[1fr_auto] md:h-[calc(100vh-80px)] md:max-h-225">
             <Carousel />
             <div className="bg-[#1a1a1a] py-4 md:py-6">
-                <div className="grid grid-cols-3 w-11/12 md:w-10/12 mx-auto divide-x divide-white/10">
+                <Container className="grid grid-cols-3 divide-x divide-white/10">
                     {services.map((service) => (
                         <div
                             key={service.id}
@@ -59,7 +60,7 @@ const Hero = () => {
                             </p>
                         </div>
                     ))}
-                </div>
+                </Container>
             </div>
         </section>
     );

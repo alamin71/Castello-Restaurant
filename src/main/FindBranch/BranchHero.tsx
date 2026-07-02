@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const BranchHero = () => {
     return (
-        <section className="w-11/12 lg:w-10/12 mx-auto">
+        <section className="w-11/12 md:w-10/12 mx-auto">
             <div className="text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-8">
 
                 <div className="space-y-4 flex-1 text-center lg:text-left">
