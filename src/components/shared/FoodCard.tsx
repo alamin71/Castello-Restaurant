@@ -58,7 +58,7 @@ const FoodCard: React.FC<FoodCardProps> = ({
       <div className="flex flex-col flex-1 px-4 py-4 gap-3">
         {/* Title + Description */}
         <div className="text-center">
-          <h2 className="text-white font-bold text-base leading-snug">
+          <h2 className="text-white font-bold text-base leading-snug line-clamp-2">
             {title}
           </h2>
           <p className="text-[#888] text-sm font-normal mt-1 leading-relaxed line-clamp-2">
