@@ -1,34 +1,40 @@
-import Image from 'next/image';
+import Image from "next/image";
+import Container from "@/components/shared/Container";
 
 const AboutHero = () => {
-    return (
-        <section className="w-11/12 md:w-10/12 mx-auto">
-            <div className='text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-8'>
+  return (
+    <section className="w-full max-w-360 mx-auto">
+      <Container className="py-10 lg:py-14">
+        <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
 
-                <div className="space-y-4 flex-1 text-center lg:text-left">
-                    <div className="h-0.5 bg-secondary w-1/3 mx-auto lg:mx-0" />
+          {/* Text */}
+          <div className="flex-1 space-y-4 text-center md:text-left text-white">
+            <div className="h-0.5 bg-secondary w-32 mx-auto md:mx-0" />
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold pb-1">
+              About Castello
+            </h2>
+            <p className="text-white/80 text-sm sm:text-base font-normal max-w-prose mx-auto md:mx-0">
+              We&apos;re passionate about serving fresh, delicious pizza made with
+              quality ingredients. From quick bites to memorable meals, we&apos;re
+              here to make every experience enjoyable.
+            </p>
+          </div>
 
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold pb-1">
-                        About Castello
-                    </h2>
+          {/* Image */}
+          <div className="flex-1 w-full relative h-64 sm:h-80 lg:h-96">
+            <Image
+              src="/assets/About.png"
+              alt="About Castello"
+              fill
+              className="object-contain md:object-right"
+              priority
+            />
+          </div>
 
-                    <p className="text-sm sm:text-base font-normal">
-                        We’re passionate about serving fresh, delicious pizza made with quality ingredients. From quick bites to memorable meals, we’re here to make every experience enjoyable.
-                    </p>
-                </div>
-
-                <div className="flex-1 w-full">
-                    <Image
-                        src="/assets/About.png"
-                        alt="BranchLocation"
-                        className="rounded-2xl w-full h-64 sm:h-80 lg:h-96 object-contain"
-                        width={1900}
-                        height={1900}
-                    />
-                </div>
-            </div>
-        </section>
-    );
+        </div>
+      </Container>
+    </section>
+  );
 };
 
 export default AboutHero;

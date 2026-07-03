@@ -3,10 +3,10 @@ import Container from "@/components/shared/Container";
 
 const BranchHero = () => {
   return (
-    <section className="w-full max-w-360 mx-auto">
+    <section className="w-full max-w-360 mx-auto overflow-hidden">
       {/* Hero row */}
       <div className="relative py-10 lg:py-14 mb-12">
-        {/* Image — absolute right half on desktop, full width on mobile */}
+        {/* Map — right half, desktop only */}
         <div className="hidden md:block absolute inset-y-0 right-0 w-1/2">
           <Image
             src="/assets/BranchLocation.png"
@@ -17,7 +17,7 @@ const BranchHero = () => {
           />
         </div>
 
-        {/* Text — inside Container, proper alignment */}
+        {/* Text */}
         <Container className="relative z-10">
           <div className="w-full md:w-1/2 space-y-4 text-center md:text-left text-white">
             <div className="h-0.5 bg-secondary w-44 mx-auto md:mx-0" />
@@ -32,7 +32,7 @@ const BranchHero = () => {
           </div>
         </Container>
 
-        {/* Mobile image */}
+        {/* Map — mobile */}
         <Container className="mt-6 md:hidden">
           <Image
             src="/assets/BranchLocation.png"
@@ -45,8 +45,8 @@ const BranchHero = () => {
         </Container>
       </div>
 
-      <Container className="flex flex-col md:flex-row gap-6">
-        {/* Dine-In card */}
+      {/* Dine-In / Delivery cards */}
+      <Container className="flex flex-col md:flex-row gap-6 pb-10">
         <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 bg-primary py-5 px-6 rounded-2xl flex-1">
           <Image
             src="/icons/DiningRed.svg"
@@ -65,7 +65,6 @@ const BranchHero = () => {
           </div>
         </div>
 
-        {/* Delivery card */}
         <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 bg-primary py-5 px-6 rounded-2xl flex-1">
           <Image
             src="/icons/Bike.svg"

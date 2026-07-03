@@ -1,5 +1,6 @@
 import FlipStack from '@/components/ui/flipstack';
 import Image from 'next/image';
+import Container from '@/components/shared/Container';
 
 export default function FlipStackDemo() {
     const cards = [
@@ -66,12 +67,15 @@ export default function FlipStackDemo() {
     ];
 
     return (
-        <>
-            <section className="flex flex-col justify-center items-center text-white my-16">
-                <div className="h-0.5 bg-secondary w-48" />
-                <h2 className="text-5xl font-bold pb-4 mt-4">Meet Our Team</h2>
-                <p className="text-base font-normal max-w-3xl text-center">Our team is dedicated to delivering the best experience possible. From the kitchen to customer service, every member works with passion, care, and attention to detail.</p>
-            </section>
+        <section className="w-full max-w-360 mx-auto">
+            <Container>
+                <div className="flex flex-col justify-center items-center text-white my-16">
+                    <div className="h-0.5 bg-secondary w-48" />
+                    <h2 className="text-5xl font-bold pb-4 mt-4">Meet Our Team</h2>
+                    <p className="text-base font-normal max-w-3xl text-center">Our team is dedicated to delivering the best experience possible. From the kitchen to customer service, every member works with passion, care, and attention to detail.</p>
+                </div>
+            </Container>
+
             <div className='w-full lg:hidden flex flex-col items-center gap-4 overflow-clip'>
                 <FlipStack cards={cards} />
             </div>
@@ -79,6 +83,6 @@ export default function FlipStackDemo() {
             <div className='hidden lg:flex overflow-visible items-center justify-center'>
                 <FlipStack cards={cards} />
             </div>
-        </>
+        </section>
     );
 }
