@@ -6,7 +6,8 @@ const BranchHero = () => {
     <section className="w-full max-w-360 mx-auto overflow-hidden">
       {/* Hero row */}
       <div className="relative py-10 lg:py-14 mb-12">
-        {/* Map — right half, desktop only */}
+
+        {/* Image — right half, sticks to right edge */}
         <div className="hidden md:block absolute inset-y-0 right-0 w-1/2">
           <Image
             src="/assets/BranchLocation.png"
@@ -17,7 +18,7 @@ const BranchHero = () => {
           />
         </div>
 
-        {/* Text */}
+        {/* Text — left side within Container */}
         <Container className="relative z-10">
           <div className="w-full md:w-1/2 space-y-4 text-center md:text-left text-white">
             <div className="h-0.5 bg-secondary w-44 mx-auto md:mx-0" />
@@ -43,46 +44,25 @@ const BranchHero = () => {
             priority
           />
         </Container>
+
       </div>
 
       {/* Dine-In / Delivery cards */}
       <Container className="flex flex-col md:flex-row gap-6 pb-10">
         <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 bg-primary py-5 px-6 rounded-2xl flex-1">
-          <Image
-            src="/icons/DiningRed.svg"
-            alt=""
-            width={96}
-            height={96}
-            className="w-14 sm:w-20 lg:w-24 h-auto shrink-0"
-          />
+          <Image src="/icons/DiningRed.svg" alt="" width={96} height={96} className="w-14 sm:w-20 lg:w-24 h-auto shrink-0" />
           <div>
-            <p className="text-[#B5B5B5] text-sm sm:text-base leading-relaxed">
-              Dine-In Waiting
-            </p>
-            <h3 className="text-white text-lg font-semibold tracking-wide">
-              15 - 20 Minutes
-            </h3>
+            <p className="text-[#B5B5B5] text-sm sm:text-base leading-relaxed">Dine-In Waiting</p>
+            <h3 className="text-white text-lg font-semibold tracking-wide">15 - 20 Minutes</h3>
           </div>
         </div>
 
         <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 bg-primary py-5 px-6 rounded-2xl flex-1">
-          <Image
-            src="/icons/Bike.svg"
-            alt=""
-            width={96}
-            height={96}
-            className="w-14 sm:w-20 lg:w-24 h-auto shrink-0"
-          />
+          <Image src="/icons/Bike.svg" alt="" width={96} height={96} className="w-14 sm:w-20 lg:w-24 h-auto shrink-0" />
           <div>
-            <p className="text-[#B5B5B5] text-sm sm:text-base leading-relaxed">
-              Home Delivery
-            </p>
-            <h3 className="text-white text-lg font-semibold tracking-wide">
-              50 - 60 Minutes
-            </h3>
-            <p className="text-[#B5B5B5] text-sm sm:text-base leading-relaxed">
-              Last order at 10:30 PM
-            </p>
+            <p className="text-[#B5B5B5] text-sm sm:text-base leading-relaxed">Home Delivery</p>
+            <h3 className="text-white text-lg font-semibold tracking-wide">50 - 60 Minutes</h3>
+            <p className="text-[#B5B5B5] text-sm sm:text-base leading-relaxed">Last order at 10:30 PM</p>
           </div>
         </div>
       </Container>
