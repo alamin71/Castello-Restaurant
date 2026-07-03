@@ -4,6 +4,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import Container from "@/components/shared/Container";
 
 const FaqQuestions = () => {
     type IFaq = {
@@ -64,30 +65,32 @@ const FaqQuestions = () => {
     ];
 
     return (
-        <div className="w-11/12 md:w-10/12 mx-auto">
-            <section className="flex flex-col justify-center items-center text-white my-16">
-                <div className="h-0.5 bg-secondary w-1/4" />
-                <h2 className="text-5xl font-bold pb-4 mt-4">Frequently Asked Questions</h2>
-            </section>
-            <section className="mb-10">
-                <Accordion type="single" collapsible>
-                    {faqs.map((faq) => (
-                        <AccordionItem
-                            key={faq.id}
-                            value={faq.question}
-                            className="mb-2"
-                        >
-                            <AccordionTrigger>
-                                {faq.question}
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                {faq.answer}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </section>
-        </div>
+        <section className="w-full max-w-360 mx-auto">
+            <Container>
+                <div className="flex flex-col justify-center items-center text-white my-16">
+                    <div className="h-0.5 bg-secondary w-1/4" />
+                    <h2 className="text-5xl font-bold pb-4 mt-4">Frequently Asked Questions</h2>
+                </div>
+                <div className="mb-10">
+                    <Accordion type="single" collapsible>
+                        {faqs.map((faq) => (
+                            <AccordionItem
+                                key={faq.id}
+                                value={faq.question}
+                                className="mb-2"
+                            >
+                                <AccordionTrigger>
+                                    {faq.question}
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    {faq.answer}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
+            </Container>
+        </section>
     );
 };
 
