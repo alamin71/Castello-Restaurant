@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import Container from "@/components/shared/Container";
 
 type CareerFormValues = {
     fullName: string;
@@ -32,7 +34,7 @@ export default function CareerForm() {
             phone: "",
             message: "",
         },
-        mode: "onTouched",
+        mode: "onSubmit",
     });
 
     const onSubmit = async (data: CareerFormValues) => {
@@ -53,8 +55,8 @@ export default function CareerForm() {
     };
 
     return (
-        <section className="w-full px-4 py-10 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl">
+        <section className="w-full max-w-360 mx-auto">
+            <Container className="py-10">
                 <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
 
                     {/* Left Content */}
@@ -79,7 +81,6 @@ export default function CareerForm() {
                                 <p className="text-lg font-semibold text-zinc-200">
                                     Application Submitted!
                                 </p>
-
                                 <p className="text-sm text-zinc-400">
                                     We&apos;ll be in touch soon.
                                 </p>
@@ -97,22 +98,14 @@ export default function CareerForm() {
                                         name="fullName"
                                         rules={{
                                             required: "Full name is required",
-                                            minLength: {
-                                                value: 2,
-                                                message: "Name is too short",
-                                            },
+                                            minLength: { value: 2, message: "Name is too short" },
                                         }}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Full Name</FormLabel>
-
                                                 <FormControl>
-                                                    <Input
-                                                        placeholder="Type your full name"
-                                                        {...field}
-                                                    />
+                                                    <Input placeholder="Type your full name" className="border-white/10 shadow-none focus-visible:ring-1 focus-visible:ring-secondary focus-visible:border-secondary" {...field} />
                                                 </FormControl>
-
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -125,26 +118,16 @@ export default function CareerForm() {
                                         rules={{
                                             required: "Email is required",
                                             pattern: {
-                                                value:
-                                                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                message:
-                                                    "Enter a valid email address",
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: "Enter a valid email address",
                                             },
                                         }}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
-                                                    Email Address
-                                                </FormLabel>
-
+                                                <FormLabel>Email Address</FormLabel>
                                                 <FormControl>
-                                                    <Input
-                                                        type="email"
-                                                        placeholder="Enter your email address"
-                                                        {...field}
-                                                    />
+                                                    <Input type="email" placeholder="Enter your email address" className="border-white/10 shadow-none focus-visible:ring-1 focus-visible:ring-secondary focus-visible:border-secondary" {...field} />
                                                 </FormControl>
-
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -152,34 +135,22 @@ export default function CareerForm() {
 
                                     {/* Phone + Resume */}
                                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                                        {/* Phone */}
                                         <FormField
                                             control={form.control}
                                             name="phone"
                                             rules={{
-                                                required:
-                                                    "Phone number is required",
+                                                required: "Phone number is required",
                                                 pattern: {
-                                                    value:
-                                                        /^[+\d\s\-()]{7,20}$/,
-                                                    message:
-                                                        "Enter a valid phone number",
+                                                    value: /^[+\d\s\-()]{7,20}$/,
+                                                    message: "Enter a valid phone number",
                                                 },
                                             }}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>
-                                                        Phone Number
-                                                    </FormLabel>
-
+                                                    <FormLabel>Phone Number</FormLabel>
                                                     <FormControl>
-                                                        <Input
-                                                            type="tel"
-                                                            placeholder="Enter your phone number"
-                                                            {...field}
-                                                        />
+                                                        <Input type="tel" placeholder="Enter your phone number" className="border-white/10 shadow-none focus-visible:ring-1 focus-visible:ring-secondary focus-visible:border-secondary" {...field} />
                                                     </FormControl>
-
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -187,36 +158,24 @@ export default function CareerForm() {
 
                                         {/* Resume Upload */}
                                         <div className="flex flex-col gap-2">
-                                            <FormLabel>
-                                                Upload Resume
-                                            </FormLabel>
-
+                                            <FormLabel>Upload Resume</FormLabel>
                                             <label
                                                 htmlFor="resume-upload"
-                                                className={`flex h-11 w-full cursor-pointer items-center rounded-lg border border-white/20 px-3 text-sm transition-colors
-                                                ${resumeFile
-                                                        ? "text-secondary"
-                                                        : "text-muted-foreground"
-                                                    }`}
+                                                className={`flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-white/10 px-3 text-sm transition-colors hover:border-secondary/50 ${
+                                                    resumeFile ? "text-secondary" : "text-muted-foreground"
+                                                }`}
                                             >
                                                 <span className="truncate">
-                                                    {resumeFile
-                                                        ? resumeFile.name
-                                                        : "Upload your resume"}
+                                                    {resumeFile ? resumeFile.name : "Upload your resume"}
                                                 </span>
+                                                <Upload size={20} strokeWidth={2.5} className={resumeFile ? "text-secondary shrink-0" : "text-white shrink-0"} />
                                             </label>
-
                                             <input
                                                 id="resume-upload"
                                                 type="file"
                                                 accept=".pdf,.doc,.docx"
                                                 className="hidden"
-                                                onChange={(e) =>
-                                                    setResumeFile(
-                                                        e.target.files?.[0] ||
-                                                        null
-                                                    )
-                                                }
+                                                onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
                                             />
                                         </div>
                                     </div>
@@ -227,19 +186,15 @@ export default function CareerForm() {
                                         name="message"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
-                                                    Others Information
-                                                </FormLabel>
-
+                                                <FormLabel>Others Information</FormLabel>
                                                 <FormControl>
                                                     <Textarea
                                                         placeholder="Type your message here"
                                                         rows={5}
-                                                        className="border border-white/20 text-white placeholder:text-muted-foreground"
+                                                        className="border-white/10 shadow-none text-white placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-secondary focus-visible:border-secondary"
                                                         {...field}
                                                     />
                                                 </FormControl>
-
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -249,22 +204,19 @@ export default function CareerForm() {
                                     <div className="pt-2 flex justify-center">
                                         <Button
                                             type="submit"
-                                            disabled={
-                                                form.formState.isSubmitting
-                                            }
+                                            disabled={form.formState.isSubmitting}
                                             className="w-full rounded-lg bg-white px-6 py-6 text-base font-semibold text-zinc-900 hover:bg-zinc-100 sm:w-auto"
                                         >
-                                            {form.formState.isSubmitting
-                                                ? "Submitting…"
-                                                : "Apply Now"}
+                                            {form.formState.isSubmitting ? "Submitting…" : "Apply Now"}
                                         </Button>
                                     </div>
                                 </form>
                             </Form>
                         )}
                     </div>
+
                 </div>
-            </div>
+            </Container>
         </section>
     );
 }

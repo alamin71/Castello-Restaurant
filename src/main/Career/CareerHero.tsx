@@ -1,9 +1,11 @@
 import Image from 'next/image';
+import Container from '@/components/shared/Container';
 
 const CareerHero = () => {
     return (
-        <section className="w-11/12 md:w-10/12 mx-auto">
-            <div className='text-white rounded-lg p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-8'>
+        <section className="w-full max-w-360 mx-auto">
+            <Container>
+            <div className='text-white rounded-lg py-10 lg:py-14 flex flex-col lg:flex-row items-center justify-between gap-8'>
 
                 <div className="space-y-4 flex-1 text-center lg:text-left">
                     <div className="h-0.5 bg-secondary w-1/3 mx-auto lg:mx-0" />
@@ -27,6 +29,7 @@ const CareerHero = () => {
                     />
                 </div>
             </div>
+            </Container>
         </section>
     );
 };
