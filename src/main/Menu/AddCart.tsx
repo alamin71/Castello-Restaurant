@@ -82,7 +82,7 @@ function QtyButton({
         <div className="mt-1 flex items-center gap-1">
             <button
                 onClick={onDec}
-                className="flex h-6 w-6 items-center justify-center rounded  text-sm text-white transition-colors hover:bg-zinc-600"
+                className="flex h-8 w-8 items-center justify-center rounded text-lg text-white transition-colors hover:bg-zinc-600"
             >
                 −
             </button>
@@ -93,7 +93,7 @@ function QtyButton({
 
             <button
                 onClick={onInc}
-                className="flex h-6 w-6 items-center justify-center rounded  text-sm text-white transition-colors hover:bg-secondary"
+                className="flex h-8 w-8 items-center justify-center rounded text-lg text-white transition-colors hover:bg-secondary"
             >
                 +
             </button>
@@ -139,9 +139,9 @@ function PizzaPickerRow({
     onSelect: () => void;
 }) {
     return (
-        <div className="flex gap-4 rounded-2xl border border-white/10 p-3">
+        <div className="flex items-stretch gap-2 rounded-2xl border border-white/10 p-2 sm:gap-4 sm:p-3">
             <div
-                className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-cover bg-center"
+                className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-cover bg-center sm:h-36 sm:w-36 lg:h-52 lg:w-52"
                 style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
             >
                 <Image
@@ -151,26 +151,27 @@ function PizzaPickerRow({
                     className="object-contain p-2"
                 />
             </div>
-            <div className="flex flex-1 flex-col justify-between min-w-0">
+            <div className="w-px self-stretch bg-white/10" />
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 px-1 text-center min-w-0 sm:gap-4 sm:py-4 sm:px-2">
                 <div>
-                    <p className="font-semibold text-white">{pizza.title}</p>
+                    <p className="text-sm font-bold text-white sm:text-lg">{pizza.title}</p>
                     <p className="text-xs text-zinc-500 line-clamp-1">
                         {pizza.description}
                     </p>
-                    <div className="mt-2 flex gap-4">
-                        {pizza.sizes.map((s) => (
-                            <div key={s.label} className="text-xs text-zinc-400">
-                                <div>{formatSizeLabel(s.label)}</div>
-                                <div className="font-bold text-white">
-                                    {s.price.toLocaleString()} kr.
-                                </div>
+                </div>
+                <div className="flex justify-center gap-2 sm:gap-4">
+                    {pizza.sizes.map((s) => (
+                        <div key={s.label} className="text-xs text-zinc-400 sm:text-sm">
+                            <div>{formatSizeLabel(s.label)}</div>
+                            <div className="text-sm font-bold text-white sm:text-base">
+                                {s.price.toLocaleString()} kr.
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
                 <button
                     onClick={onSelect}
-                    className="mt-2 w-full rounded-full bg-zinc-800 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700"
+                    className="w-full cursor-pointer rounded-full bg-zinc-800 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 sm:py-2 sm:text-base"
                 >
                     Select this one
                 </button>
@@ -301,12 +302,12 @@ export default function AddCartDialog({
                 )}
             </DialogTrigger>
             <DialogTitle className="sr-only"></DialogTitle>
-            <DialogContent className="max-h-[92vh] md:w-full w-11/12 max-w-3xl! overflow-hidden border-0 bg-background shadow-md shadow-white/10 p-0 text-white">
+            <DialogContent className="max-h-[92vh] md:w-full w-11/12 max-w-180.25! overflow-hidden border-0 bg-background shadow-md shadow-white/10 p-0 text-white">
                 <div className="flex h-[92vh] flex-col ">
 
                     {/* Header */}
                     {pickerFor ? (
-                        <div className="flex shrink-0 items-center gap-3 border-b border-zinc-800 px-4 py-3">
+                        <div className="flex shrink-0 items-center gap-3 border-b border-zinc-800 px-6 py-3">
                             <button
                                 onClick={() => setPickerFor(null)}
                                 className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/10"
@@ -323,7 +324,7 @@ export default function AddCartDialog({
                             </div>
                         </div>
                     ) : (
-                        <div className="shrink-0 border-b border-zinc-800 py-3 pl-4 pr-12 text-left">
+                        <div className="shrink-0 border-b border-zinc-800 py-3 pl-6 pr-14 text-left">
                             <h2 className="text-lg font-bold tracking-tight text-white">
                                 {titlePizza ? titlePizza.title : "Half & Half Pizza"}
                             </h2>
@@ -335,7 +336,7 @@ export default function AddCartDialog({
 
                     {pickerFor ? (
                         <ScrollArea className="flex-1 min-h-0">
-                            <div className="space-y-3 p-4">
+                            <div className="space-y-3 px-6 py-4">
                                 {PIZZAS.map((p) => (
                                     <PizzaPickerRow
                                         key={p.title}
@@ -397,7 +398,7 @@ export default function AddCartDialog({
                                 {/* Crust thumbnails — only relevant outside half & half mode */}
                                 {mode === "single" && (
                                     <>
-                                        <div className="flex justify-center gap-3 overflow-x-auto px-4 py-2">
+                                        <div className="flex justify-center gap-3 overflow-x-auto px-6 py-2">
                                             {CRUSTS.map((c, i) => (
                                                 <button
                                                     key={c.label}
@@ -422,7 +423,7 @@ export default function AddCartDialog({
 
                                 {/* Half & Half toggle */}
                                 {allowHalfHalf && (
-                                    <div className="flex justify-center pb-3">
+                                    <div className="flex justify-center my-6">
                                         <button
                                             onClick={toggleHalfHalf}
                                             className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${mode === "half"
@@ -438,7 +439,7 @@ export default function AddCartDialog({
 
                                 {/* 1st Half / 2nd Half tabs + active-half summary */}
                                 {mode === "half" && (
-                                    <div className="px-4 pb-4">
+                                    <div className="px-6 pb-6">
                                         <div className="grid grid-cols-2 overflow-hidden rounded-full border border-white/15">
                                             {(["first", "second"] as HalfSlot[]).map((slot) => (
                                                 <button
@@ -456,7 +457,7 @@ export default function AddCartDialog({
 
                                         <button
                                             onClick={() => setPickerFor(activeHalf)}
-                                            className="mt-3 flex w-full items-center justify-between rounded-2xl border border-white/15 px-4 py-3 text-left hover:border-white/30"
+                                            className="mt-6 flex w-full items-center justify-between rounded-2xl border border-white/15 px-4 py-3 text-left hover:border-white/30"
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
                                                 <HalfCircleIcon className="h-5 w-5 shrink-0 text-secondary" />
@@ -474,16 +475,14 @@ export default function AddCartDialog({
                                     </div>
                                 )}
 
-                                <Separator />
-
                                 {/* Variants */}
-                                <div className="px-4 pt-4">
+                                <div className="px-6 pt-6">
                                     <h3 className="text-sm font-semibold text-white">Variants</h3>
                                 </div>
                                 <RadioGroup
                                     value={selectedSize.toString()}
                                     onValueChange={(value) => setSelectedSize(Number(value))}
-                                    className="px-4 pb-4 pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2"
+                                    className="px-6 pb-6 pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2"
                                 >
                                     {half1.pizza.sizes.map((s, i) => {
                                         const active = selectedSize === i;
@@ -491,32 +490,27 @@ export default function AddCartDialog({
                                             <Label
                                                 key={i}
                                                 htmlFor={`size-${i}`}
-                                                className={`flex cursor-pointer items-center justify-between rounded-3xl border px-4 py-4 transition-all ${active
+                                                className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-3xl border p-3 text-center transition-all ${active
                                                     ? "border-secondary bg-white/3"
                                                     : "border-white/15 hover:border-white/30"
                                                     }`}
                                             >
-                                                <div className="flex items-center gap-4">
-                                                    <RadioGroupItem
-                                                        value={i.toString()}
-                                                        id={`size-${i}`}
-                                                        className="border-white/40 text-secondary"
-                                                    />
-                                                    <span className="text-lg font-medium text-zinc-300">
-                                                        {formatSizeLabel(s.label)}
-                                                    </span>
-                                                    <div className="h-8 w-px bg-white/10" />
-                                                </div>
-                                                <div className="flex flex-col items-end">
-                                                    <span className="text-base font-bold text-white">
-                                                        {s.price.toLocaleString()} ISK.
-                                                    </span>
+                                                <RadioGroupItem
+                                                    value={i.toString()}
+                                                    id={`size-${i}`}
+                                                    className="sr-only"
+                                                />
+                                                <span className="text-base font-bold text-white">
+                                                    {s.price.toLocaleString()} kr.
                                                     {s.originalPrice && (
-                                                        <span className="text-sm text-zinc-500 line-through">
-                                                            {s.originalPrice.toLocaleString()} ISK.
+                                                        <span className="ml-2 text-sm font-normal text-zinc-500 line-through">
+                                                            {s.originalPrice.toLocaleString()} kr.
                                                         </span>
                                                     )}
-                                                </div>
+                                                </span>
+                                                <span className="text-sm text-zinc-400">
+                                                    {formatSizeLabel(s.label)}
+                                                </span>
                                             </Label>
                                         );
                                     })}
@@ -524,11 +518,11 @@ export default function AddCartDialog({
                                 <Separator />
 
                                 {/* Topping groups for the currently active half */}
-                                <div className="px-4 pt-3">
+                                <div className="px-6 pt-3">
                                     <h3 className="text-sm font-semibold text-white">Toppings</h3>
                                     <p className="text-xs text-zinc-500">You can customize toppings</p>
                                 </div>
-                                <div className="space-y-5 px-4 pt-4 pb-10">
+                                <div className="space-y-5 px-6 pt-4 pb-10">
                                     {activeState.groups.map((group, gi) => (
                                         <div key={group.label}>
                                             <div className="mb-2 flex items-baseline justify-between">
@@ -557,12 +551,12 @@ export default function AddCartDialog({
                     )}
 
                     {/* Fixed Footer */}
-                    <div className="border-t border-zinc-800 bg-zinc-900/95 px-4 py-3 backdrop-blur">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-11 items-center gap-2 rounded-full bg-zinc-800 px-5">
+                    <div className="border-t border-zinc-800 bg-zinc-900/95 px-6 py-3 backdrop-blur">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="flex h-11 items-center gap-2 rounded-full bg-zinc-800 px-3 sm:px-5">
                                 <button
                                     onClick={() => setCartQty((q) => Math.max(1, q - 1))}
-                                    className="flex h-5 w-5 items-center justify-center text-base text-white transition-colors hover:text-secondary/90"
+                                    className="flex h-6 w-6 items-center justify-center text-lg text-white transition-colors hover:text-secondary/90"
                                 >
                                     −
                                 </button>
@@ -571,26 +565,26 @@ export default function AddCartDialog({
                                 </span>
                                 <button
                                     onClick={() => setCartQty((q) => q + 1)}
-                                    className="flex h-5 w-5 items-center justify-center text-base text-white transition-colors hover:text-secondary/90"
+                                    className="flex h-6 w-6 items-center justify-center text-lg text-white transition-colors hover:text-secondary/90"
                                 >
                                     +
                                 </button>
                             </div>
 
-                            <span className="flex h-11 shrink-0 items-center justify-center rounded-full bg-zinc-800 px-16 text-sm font-bold text-white">
+                            <span className="flex h-11 shrink-0 items-center justify-center rounded-full bg-zinc-800 px-4 text-sm font-bold text-white sm:px-8 lg:px-16">
                                 {total.toLocaleString()} ISK.
                             </span>
 
                             {canAddToCart ? (
                                 <DialogClose asChild>
-                                    <button className="flex h-11 flex-1 cursor-pointer items-center justify-center rounded-full bg-secondary px-4 text-sm font-bold text-white transition-all hover:bg-secondary/90 active:scale-95">
+                                    <button className="flex h-11 flex-1 cursor-pointer items-center justify-center rounded-full bg-secondary px-3 text-sm font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 sm:px-4">
                                         Add to cart
                                     </button>
                                 </DialogClose>
                             ) : (
                                 <button
                                     disabled
-                                    className="flex h-11 flex-1 cursor-not-allowed items-center justify-center rounded-full bg-secondary/40 px-4 text-sm font-bold text-white/60"
+                                    className="flex h-11 flex-1 cursor-not-allowed items-center justify-center rounded-full bg-secondary/40 px-3 text-sm font-bold text-white/60 sm:px-4"
                                 >
                                     Add to cart
                                 </button>
