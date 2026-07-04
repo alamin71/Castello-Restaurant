@@ -2,20 +2,17 @@
 
 import Image from "next/image";
 import AddCartDialog from "@/main/Menu/AddCart";
-
-interface SizePrice {
-  label: string;
-  price: number;
-  originalPrice?: number;
-}
+import type { PizzaItem, SizeOption } from "@/main/Menu/pizzaData";
 
 export interface FoodCardProps {
   title: string;
   description: string;
   price?: string | number;
-  sizes?: SizePrice[];
+  sizes?: SizeOption[];
   image: string;
   badge?: string;
+  toppings?: string[];
+  allowHalfHalf?: boolean;
   onAdd?: () => void;
 }
 
@@ -26,7 +23,18 @@ const FoodCard: React.FC<FoodCardProps> = ({
   sizes,
   image,
   badge,
+  toppings,
+  allowHalfHalf,
 }) => {
+  const pizza: PizzaItem = {
+    title,
+    description,
+    badge,
+    sizes: sizes && sizes.length > 0 ? sizes : [{ label: "Regular", price: Number(price) || 0 }],
+    image,
+    toppings,
+  };
+
   return (
     <div className="flex flex-col rounded-2xl border border-[#2e2e2e] bg-[#1a1a1a] overflow-hidden min-w-0">
       {/* Image */}
@@ -95,7 +103,7 @@ const FoodCard: React.FC<FoodCardProps> = ({
             </p>
           )}
 
-          <AddCartDialog variant="full" />
+          <AddCartDialog variant="full" pizza={pizza} allowHalfHalf={allowHalfHalf} />
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ const SpecialOffer = () => {
             description="12&quot; pizza with 2 toppings, small breadsticks &amp; 2L soda"
             price={12.99}
             image="/assets/pizza.png"
+            allowHalfHalf
           />
         ))}
       </div>

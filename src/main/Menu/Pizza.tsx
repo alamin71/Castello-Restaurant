@@ -44,7 +44,9 @@ const Pizzas = () => {
                         description={pizza.description}
                         badge={pizza.badge}
                         sizes={pizza.sizes}
-                        image="/assets/pizza.png"
+                        toppings={pizza.toppings}
+                        allowHalfHalf
+                        image={pizza.image ?? "/assets/pizza.png"}
                     />
                 ))}
             </div>
