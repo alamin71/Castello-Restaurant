@@ -64,11 +64,9 @@ export default function Navbar() {
 
                 {/* Desktop Right Section */}
                 <div className="hidden md:flex items-center gap-4">
+                    <OrderCartSheet />
                     {isLoggedIn ? (
-                        <>
-                            <OrderCartSheet />
-                            <ProfileDropdown />
-                        </>
+                        <ProfileDropdown />
                     ) : (
                         <Button
                             onClick={openLoginModal}
@@ -81,7 +79,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 <div className="md:hidden flex items-center gap-3">
-                    {isLoggedIn && <OrderCartSheet />}
+                    <OrderCartSheet />
 
                     <Sheet>
                         <SheetTrigger asChild>

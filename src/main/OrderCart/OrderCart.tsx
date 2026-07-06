@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,69 +10,25 @@ import Cart from "../../../public/icons/cart";
 import Image from "next/image";
 import Link from "next/link";
 
-type CartItem = {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    quantity: number;
-    price: number;
-};
-
-const initialCartItems: CartItem[] = [
-    {
-        id: 1,
-        name: "Durum Kebab w/chicken",
-        description: "Chicken, cabbage, cucumber, tomatoes, red onion",
-        image: "/assets/pizza.png",
-        quantity: 2,
-        price: 960,
-    },
-    {
-        id: 2,
-        name: "The front page pizza",
-        description: "Pepperoni, Bacon, Paprika, Garlic Sauce, Basil",
-        image: "/assets/pizza.png",
-        quantity: 2,
-        price: 960,
-    },
-    {
-        id: 3,
-        name: "Coke",
-        description: "2L",
-        image: "/assets/pizza.png",
-        quantity: 2,
-        price: 960,
-    },
-];
-
 export default function OrderCartSheet() {
-    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+    const { isLoggedIn, openLoginModal } = useAuth();
+    const { cartItems, itemCount, updateQuantity, removeItem } = useCart();
 
     const subtotal = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
     );
 
-    const updateQuantity = (id: number, delta: number) => {
-        setCartItems((prev) =>
-            prev
-                .map((item) =>
-                    item.id === id ? { ...item, quantity: item.quantity + delta } : item
-                )
-                .filter((item) => item.quantity > 0)
-        );
-    };
-
-    const removeItem = (id: number) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
-    };
-
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <button aria-label="Open cart">
+                <button aria-label="Open cart" className="relative cursor-pointer">
                     <Cart />
+                    {itemCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold text-white">
+                            {itemCount}
+                        </span>
+                    )}
                 </button>
             </SheetTrigger>
 
@@ -175,6 +132,7 @@ export default function OrderCartSheet() {
                         <SheetClose asChild>
                             <Link
                                 href="/checkout"
+                                onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
                                 className="w-full block py-3 rounded-full bg-secondary text-base tracking-wider font-medium text-white hover:bg-secondary/90 text-center"
                             >
                                 Complete this order

@@ -1,7 +1,8 @@
 "use client";
 
-import { cloneElement, isValidElement, useState, type ReactElement, type ReactNode } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { isValidElement, useState, type ReactNode } from "react";
+import { toast } from "sonner";
+import { useCart } from "@/context/CartContext";
 
 import {
     Dialog,
@@ -192,7 +193,7 @@ export default function AddCartDialog({
     variant?: "icon" | "full";
     trigger?: ReactNode;
 }) {
-    const { isLoggedIn, openLoginModal } = useAuth();
+    const { addToCart } = useCart();
     const [open, setOpen] = useState(false);
 
     const [selectedSize, setSelectedSize] = useState(0);
@@ -284,24 +285,44 @@ export default function AddCartDialog({
 
     const titlePizza = mode === "half" ? null : half1?.pizza ?? null;
 
+    const handleAddToCart = () => {
+        if (!canAddToCart) return;
+
+        const name =
+            mode === "half" && half1 && half2
+                ? `Half & Half: ${half1.pizza.title} + ${half2.pizza.title}`
+                : half1?.pizza.title ?? "Pizza";
+
+        const description =
+            mode === "half" && half1 && half2
+                ? `${formatSizeLabel(half1.pizza.sizes[selectedSize]?.label ?? "")} · 1st: ${half1.pizza.description} — 2nd: ${half2.pizza.description}`
+                : `${formatSizeLabel(half1?.pizza.sizes[selectedSize]?.label ?? "")} · ${half1?.pizza.description ?? ""}`;
+
+        addToCart({
+            name,
+            description,
+            image: half1?.pizza.image ?? half2?.pizza.image ?? FALLBACK_IMAGE,
+            quantity: cartQty,
+            price: basePrice + toppingsSum,
+        });
+
+        toast.success(`${name} added to cart!`);
+    };
+
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 {trigger && isValidElement(trigger) ? (
-                    cloneElement(trigger as ReactElement<{ onClick?: (e: React.MouseEvent) => void }>, {
-                        onClick: (e: React.MouseEvent) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } },
-                    })
+                    trigger
                 ) : variant === "full" ? (
                     <button
                         className="w-full h-10 flex items-center justify-center rounded-full bg-secondary text-white text-sm font-semibold hover:bg-secondary/90 active:scale-95 transition-all cursor-pointer"
-                        onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
                     >
                         Add to Cart
                     </button>
                 ) : (
                     <button
                         className="h-10 w-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer"
-                        onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
                     >
                         <Plus className="h-5 w-5" />
                     </button>
@@ -599,7 +620,10 @@ export default function AddCartDialog({
 
                             {canAddToCart ? (
                                 <DialogClose asChild>
-                                    <button className="flex h-11 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-secondary px-2 text-xs font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 min-[400px]:w-auto min-[400px]:flex-1 sm:px-4 sm:text-sm">
+                                    <button
+                                        onClick={handleAddToCart}
+                                        className="flex h-11 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-secondary px-2 text-xs font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 min-[400px]:w-auto min-[400px]:flex-1 sm:px-4 sm:text-sm"
+                                    >
                                         Add to cart
                                     </button>
                                 </DialogClose>
