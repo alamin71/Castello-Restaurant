@@ -551,40 +551,40 @@ export default function AddCartDialog({
                     )}
 
                     {/* Fixed Footer */}
-                    <div className="border-t border-zinc-800 bg-zinc-900/95 px-6 py-3 backdrop-blur">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="flex h-11 items-center gap-2 rounded-full bg-zinc-800 px-3 sm:px-5">
+                    <div className="border-t border-zinc-800 bg-zinc-900/95 px-3 py-3 backdrop-blur sm:px-6">
+                        <div className="flex items-center gap-1.5 sm:gap-3">
+                            <div className="flex h-10 shrink-0 items-center gap-1 rounded-full bg-zinc-800 px-2 sm:h-11 sm:gap-2 sm:px-5">
                                 <button
                                     onClick={() => setCartQty((q) => Math.max(1, q - 1))}
-                                    className="flex h-6 w-6 items-center justify-center text-lg text-white transition-colors hover:text-secondary/90"
+                                    className="flex h-6 w-6 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
                                 >
                                     −
                                 </button>
-                                <span className="w-4 text-center text-sm font-bold text-white">
+                                <span className="w-4 text-center text-xs font-bold text-white sm:text-sm">
                                     {cartQty}
                                 </span>
                                 <button
                                     onClick={() => setCartQty((q) => q + 1)}
-                                    className="flex h-6 w-6 items-center justify-center text-lg text-white transition-colors hover:text-secondary/90"
+                                    className="flex h-6 w-6 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
                                 >
                                     +
                                 </button>
                             </div>
 
-                            <span className="flex h-11 shrink-0 items-center justify-center rounded-full bg-zinc-800 px-4 text-sm font-bold text-white sm:px-8 lg:px-16">
+                            <span className="flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-zinc-800 px-2 text-xs font-bold text-white sm:h-11 sm:px-8 sm:text-sm lg:px-16">
                                 {total.toLocaleString()} ISK.
                             </span>
 
                             {canAddToCart ? (
                                 <DialogClose asChild>
-                                    <button className="flex h-11 flex-1 cursor-pointer items-center justify-center rounded-full bg-secondary px-3 text-sm font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 sm:px-4">
+                                    <button className="flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-secondary px-2 text-xs font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 sm:h-11 sm:px-4 sm:text-sm">
                                         Add to cart
                                     </button>
                                 </DialogClose>
                             ) : (
                                 <button
                                     disabled
-                                    className="flex h-11 flex-1 cursor-not-allowed items-center justify-center rounded-full bg-secondary/40 px-3 text-sm font-bold text-white/60 sm:px-4"
+                                    className="flex h-10 min-w-0 flex-1 cursor-not-allowed items-center justify-center whitespace-nowrap rounded-full bg-secondary/40 px-2 text-xs font-bold text-white/60 sm:h-11 sm:px-4 sm:text-sm"
                                 >
                                     Add to cart
                                 </button>

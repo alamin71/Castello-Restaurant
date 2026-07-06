@@ -88,7 +88,7 @@ const AllMenu = () => {
                                     key={cat.id}
                                     onClick={() => handleCategoryClick(cat.id)}
                                     className={cn(
-                                        "relative flex flex-col items-center gap-3",
+                                        "relative f lex flex-col items-center gap-3",
                                         "px-3 py-2.5 rounded-xl transition-all duration-200 group cursor-pointer",
                                         isActive
                                             ? "text-secondary bg-primary"
