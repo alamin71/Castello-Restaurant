@@ -106,3 +106,11 @@ export const PIZZAS: PizzaItem[] = [
     { title: "The Rose", description: "Ham, Cheese, Bacon, Pineapple, Sauce", sizes: [{ label: "15in", price: 4690 }, { label: "12in", price: 3750 }, { label: "9in", price: 3050 }], toppings: ["Ham", "Cheese", "Bacon", "Pineapple", "Sauce"] },
     { title: "Kebab pizza with chicken", description: "Chicken, Onion, Garlic Sauce", sizes: [{ label: "15in", price: 4950 }, { label: "12in", price: 3950 }, { label: "9in", price: 3290 }], toppings: ["Chicken", "Onion", "Garlic Sauce"] },
 ];
+
+// Base starting point for the "Make Your Own Pizza" quick-action — admin-configurable in the future.
+export const MAKE_YOUR_OWN_PIZZA: PizzaItem = {
+    title: "Make Your Own Pizza",
+    description: "Here you can choose from all the toppings we offer and make your own pizza.",
+    sizes: [{ label: "15in", price: 5990 }, { label: "12in", price: 4850 }, { label: "9in", price: 3990 }],
+    toppings: ["Cheese", "Sauce"],
+};

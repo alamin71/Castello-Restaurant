@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { cloneElement, isValidElement, useState, type ReactElement, type ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 import {
@@ -82,7 +82,7 @@ function QtyButton({
         <div className="mt-1 flex items-center gap-1">
             <button
                 onClick={onDec}
-                className="flex h-8 w-8 items-center justify-center rounded text-lg text-white transition-colors hover:bg-zinc-600"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-zinc-600"
             >
                 −
             </button>
@@ -93,7 +93,7 @@ function QtyButton({
 
             <button
                 onClick={onInc}
-                className="flex h-8 w-8 items-center justify-center rounded text-lg text-white transition-colors hover:bg-secondary"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-secondary"
             >
                 +
             </button>
@@ -185,10 +185,12 @@ export default function AddCartDialog({
     pizza,
     allowHalfHalf = false,
     variant = "icon",
+    trigger,
 }: {
-    pizza: PizzaItem;
+    pizza?: PizzaItem;
     allowHalfHalf?: boolean;
     variant?: "icon" | "full";
+    trigger?: ReactNode;
 }) {
     const { isLoggedIn, openLoginModal } = useAuth();
     const [open, setOpen] = useState(false);
@@ -197,17 +199,17 @@ export default function AddCartDialog({
     const [selectedCrust, setSelectedCrust] = useState(0);
     const [cartQty, setCartQty] = useState(1);
 
-    const [mode, setMode] = useState<"single" | "half">("single");
+    const [mode, setMode] = useState<"single" | "half">(pizza ? "single" : "half");
     const [activeHalf, setActiveHalf] = useState<HalfSlot>("first");
-    const [half1, setHalf1] = useState<HalfState>(() => makeHalf(pizza));
+    const [half1, setHalf1] = useState<HalfState | null>(() => (pizza ? makeHalf(pizza) : null));
     const [half2, setHalf2] = useState<HalfState | null>(null);
     const [pickerFor, setPickerFor] = useState<HalfSlot | null>(null);
 
     const handleOpenChange = (next: boolean) => {
         if (next) {
-            setMode("single");
+            setMode(pizza ? "single" : "half");
             setActiveHalf("first");
-            setHalf1(makeHalf(pizza));
+            setHalf1(pizza ? makeHalf(pizza) : null);
             setHalf2(null);
             setPickerFor(null);
             setSelectedSize(0);
@@ -222,8 +224,8 @@ export default function AddCartDialog({
     };
 
     const selectTab = (tab: HalfSlot) => {
-        if (tab === "second" && !half2) {
-            setPickerFor("second");
+        if ((tab === "first" && !half1) || (tab === "second" && !half2)) {
+            setPickerFor(tab);
             return;
         }
         setActiveHalf(tab);
@@ -239,7 +241,7 @@ export default function AddCartDialog({
     };
 
     const editTarget: HalfSlot = mode === "single" ? "first" : activeHalf;
-    const activeState: HalfState = editTarget === "second" && half2 ? half2 : half1;
+    const activeState: HalfState | null = editTarget === "second" ? half2 : half1;
 
     const updateQty = (target: HalfSlot, gi: number, ti: number, delta: number) => {
         const updater = (groups: ToppingGroup[]) =>
@@ -255,37 +257,41 @@ export default function AddCartDialog({
             );
 
         if (target === "first") {
-            setHalf1((prev) => ({ ...prev, groups: updater(prev.groups) }));
+            setHalf1((prev) => (prev ? { ...prev, groups: updater(prev.groups) } : prev));
         } else {
             setHalf2((prev) => (prev ? { ...prev, groups: updater(prev.groups) } : prev));
         }
     };
 
-    const half1Price = half1.pizza.sizes[selectedSize]?.price ?? 0;
+    const half1Price = half1?.pizza.sizes[selectedSize]?.price ?? 0;
     const half2Price = half2?.pizza.sizes[selectedSize]?.price ?? 0;
 
     const basePrice =
         mode === "single"
             ? half1Price
-            : half2
+            : half1 && half2
                 ? Math.round((half1Price + half2Price) / 2)
-                : half1Price;
+                : half1Price || half2Price;
 
     const toppingsSum =
         mode === "single"
-            ? toppingsTotal(half1.groups)
-            : toppingsTotal(half1.groups) + (half2 ? toppingsTotal(half2.groups) : 0);
+            ? toppingsTotal(half1?.groups ?? [])
+            : toppingsTotal(half1?.groups ?? []) + toppingsTotal(half2?.groups ?? []);
 
     const total = (basePrice + toppingsSum) * cartQty;
 
-    const canAddToCart = !pickerFor && !(mode === "half" && !half2);
+    const canAddToCart = !pickerFor && (mode === "single" || (!!half1 && !!half2));
 
-    const titlePizza = mode === "half" ? null : half1.pizza;
+    const titlePizza = mode === "half" ? null : half1?.pizza ?? null;
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                {variant === "full" ? (
+                {trigger && isValidElement(trigger) ? (
+                    cloneElement(trigger as ReactElement<{ onClick?: (e: React.MouseEvent) => void }>, {
+                        onClick: (e: React.MouseEvent) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } },
+                    })
+                ) : variant === "full" ? (
                     <button
                         className="w-full h-10 flex items-center justify-center rounded-full bg-secondary text-white text-sm font-semibold hover:bg-secondary/90 active:scale-95 transition-all cursor-pointer"
                         onClick={(e) => { if (!isLoggedIn) { e.preventDefault(); openLoginModal(); } }}
@@ -310,7 +316,7 @@ export default function AddCartDialog({
                         <div className="flex shrink-0 items-center gap-3 border-b border-zinc-800 px-4 py-3 sm:px-6">
                             <button
                                 onClick={() => setPickerFor(null)}
-                                className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/10"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white hover:bg-white/10"
                             >
                                 <ArrowLeft className="h-5 w-5" />
                             </button>
@@ -355,25 +361,31 @@ export default function AddCartDialog({
                                     style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
                                 >
                                     {mode === "single" ? (
-                                        <Image
-                                            src={half1.pizza.image ?? FALLBACK_IMAGE}
-                                            alt={half1.pizza.title}
-                                            width={180}
-                                            height={180}
-                                            className="object-contain py-6"
-                                        />
+                                        half1 && (
+                                            <Image
+                                                src={half1.pizza.image ?? FALLBACK_IMAGE}
+                                                alt={half1.pizza.title}
+                                                width={180}
+                                                height={180}
+                                                className="object-contain py-6"
+                                            />
+                                        )
                                     ) : (
                                         <div className="relative h-44 w-44">
                                             <div
                                                 className="absolute inset-0"
                                                 style={{ clipPath: "inset(0 50% 0 0)" }}
                                             >
-                                                <Image
-                                                    src={half1.pizza.image ?? FALLBACK_IMAGE}
-                                                    alt={half1.pizza.title}
-                                                    fill
-                                                    className="object-contain"
-                                                />
+                                                {half1 ? (
+                                                    <Image
+                                                        src={half1.pizza.image ?? FALLBACK_IMAGE}
+                                                        alt={half1.pizza.title}
+                                                        fill
+                                                        className="object-contain"
+                                                    />
+                                                ) : (
+                                                    <div className="h-full w-full rounded-full border-2 border-dashed border-white/20" />
+                                                )}
                                             </div>
                                             <div
                                                 className="absolute inset-0"
@@ -403,7 +415,7 @@ export default function AddCartDialog({
                                                 <button
                                                     key={c.label}
                                                     onClick={() => setSelectedCrust(i)}
-                                                    className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 transition-all sm:h-14 sm:w-14 ${selectedCrust === i
+                                                    className={`relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border-2 transition-all sm:h-14 sm:w-14 ${selectedCrust === i
                                                         ? "scale-105 border-secondary"
                                                         : "border-zinc-700 hover:border-zinc-500"
                                                         }`}
@@ -422,11 +434,11 @@ export default function AddCartDialog({
                                 )}
 
                                 {/* Half & Half toggle */}
-                                {allowHalfHalf && (
+                                {pizza && allowHalfHalf && (
                                     <div className="flex justify-center my-6">
                                         <button
                                             onClick={toggleHalfHalf}
-                                            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${mode === "half"
+                                            className={`flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${mode === "half"
                                                 ? "border-secondary text-secondary"
                                                 : "border-white/20 text-white hover:border-white/40"
                                                 }`}
@@ -445,7 +457,7 @@ export default function AddCartDialog({
                                                 <button
                                                     key={slot}
                                                     onClick={() => selectTab(slot)}
-                                                    className={`py-2.5 text-sm font-semibold transition-colors ${activeHalf === slot
+                                                    className={`cursor-pointer py-2.5 text-sm font-semibold transition-colors ${activeHalf === slot
                                                         ? "bg-white text-black"
                                                         : "text-zinc-400 hover:text-white"
                                                         }`}
@@ -457,16 +469,20 @@ export default function AddCartDialog({
 
                                         <button
                                             onClick={() => setPickerFor(activeHalf)}
-                                            className="mt-6 flex w-full items-center justify-between rounded-2xl border border-white/15 px-4 py-3 text-left hover:border-white/30"
+                                            className="mt-6 flex w-full cursor-pointer items-center justify-between rounded-2xl border border-white/15 px-4 py-3 text-left hover:border-white/30"
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
                                                 <HalfCircleIcon className="h-5 w-5 shrink-0 text-secondary" />
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-semibold text-white">
-                                                        {activeState.pizza.title}
+                                                        {activeState
+                                                            ? activeState.pizza.title
+                                                            : activeHalf === "first" ? "1st Half" : "2nd Half"}
                                                     </p>
                                                     <p className="text-xs text-zinc-500 line-clamp-1">
-                                                        {activeState.pizza.description}
+                                                        {activeState
+                                                            ? activeState.pizza.description
+                                                            : "Choose a half pizza from pizza menu"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -475,77 +491,81 @@ export default function AddCartDialog({
                                     </div>
                                 )}
 
-                                {/* Variants */}
-                                <div className="px-4 pt-4 sm:px-6 sm:pt-6">
-                                    <h3 className="text-sm font-semibold text-white">Variants</h3>
-                                </div>
-                                <RadioGroup
-                                    value={selectedSize.toString()}
-                                    onValueChange={(value) => setSelectedSize(Number(value))}
-                                    className="px-4 pb-4 pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:px-6 sm:pb-6"
-                                >
-                                    {half1.pizza.sizes.map((s, i) => {
-                                        const active = selectedSize === i;
-                                        return (
-                                            <Label
-                                                key={i}
-                                                htmlFor={`size-${i}`}
-                                                className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-3xl border p-3 text-center transition-all ${active
-                                                    ? "border-secondary bg-white/3"
-                                                    : "border-white/15 hover:border-white/30"
-                                                    }`}
-                                            >
-                                                <RadioGroupItem
-                                                    value={i.toString()}
-                                                    id={`size-${i}`}
-                                                    className="sr-only"
-                                                />
-                                                <span className="text-base font-bold text-white">
-                                                    {s.price.toLocaleString()} kr.
-                                                    {s.originalPrice && (
-                                                        <span className="ml-2 text-sm font-normal text-zinc-500 line-through">
-                                                            {s.originalPrice.toLocaleString()} kr.
-                                                        </span>
-                                                    )}
-                                                </span>
-                                                <span className="text-sm text-zinc-400">
-                                                    {formatSizeLabel(s.label)}
-                                                </span>
-                                            </Label>
-                                        );
-                                    })}
-                                </RadioGroup>
-                                <Separator />
-
-                                {/* Topping groups for the currently active half */}
-                                <div className="px-4 pt-3 sm:px-6">
-                                    <h3 className="text-sm font-semibold text-white">Toppings</h3>
-                                    <p className="text-xs text-zinc-500">You can customize toppings</p>
-                                </div>
-                                <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
-                                    {activeState.groups.map((group, gi) => (
-                                        <div key={group.label}>
-                                            <div className="mb-2 flex items-baseline justify-between">
-                                                <span className="text-sm font-semibold text-white">
-                                                    {group.label}
-                                                </span>
-                                                <span className="text-[10px] text-zinc-500">
-                                                    {group.surcharge}
-                                                </span>
-                                            </div>
-                                            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
-                                                {group.items.map((topping, ti) => (
-                                                    <ToppingCard
-                                                        key={topping.name}
-                                                        topping={topping}
-                                                        onInc={() => updateQty(editTarget, gi, ti, 1)}
-                                                        onDec={() => updateQty(editTarget, gi, ti, -1)}
-                                                    />
-                                                ))}
-                                            </div>
+                                {activeState && (
+                                    <>
+                                        {/* Variants */}
+                                        <div className="px-4 pt-4 sm:px-6 sm:pt-6">
+                                            <h3 className="text-sm font-semibold text-white">Variants</h3>
                                         </div>
-                                    ))}
-                                </div>
+                                        <RadioGroup
+                                            value={selectedSize.toString()}
+                                            onValueChange={(value) => setSelectedSize(Number(value))}
+                                            className="px-4 pb-4 pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:px-6 sm:pb-6"
+                                        >
+                                            {activeState.pizza.sizes.map((s, i) => {
+                                                const active = selectedSize === i;
+                                                return (
+                                                    <Label
+                                                        key={i}
+                                                        htmlFor={`size-${i}`}
+                                                        className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-3xl border p-3 text-center transition-all ${active
+                                                            ? "border-secondary bg-white/3"
+                                                            : "border-white/15 hover:border-white/30"
+                                                            }`}
+                                                    >
+                                                        <RadioGroupItem
+                                                            value={i.toString()}
+                                                            id={`size-${i}`}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className="text-base font-bold text-white">
+                                                            {s.price.toLocaleString()} kr.
+                                                            {s.originalPrice && (
+                                                                <span className="ml-2 text-sm font-normal text-zinc-500 line-through">
+                                                                    {s.originalPrice.toLocaleString()} kr.
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                        <span className="text-sm text-zinc-400">
+                                                            {formatSizeLabel(s.label)}
+                                                        </span>
+                                                    </Label>
+                                                );
+                                            })}
+                                        </RadioGroup>
+                                        <Separator />
+
+                                        {/* Topping groups for the currently active half */}
+                                        <div className="px-4 pt-3 sm:px-6">
+                                            <h3 className="text-sm font-semibold text-white">Toppings</h3>
+                                            <p className="text-xs text-zinc-500">You can customize toppings</p>
+                                        </div>
+                                        <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
+                                            {activeState.groups.map((group, gi) => (
+                                                <div key={group.label}>
+                                                    <div className="mb-2 flex items-baseline justify-between">
+                                                        <span className="text-sm font-semibold text-white">
+                                                            {group.label}
+                                                        </span>
+                                                        <span className="text-[10px] text-zinc-500">
+                                                            {group.surcharge}
+                                                        </span>
+                                                    </div>
+                                                    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
+                                                        {group.items.map((topping, ti) => (
+                                                            <ToppingCard
+                                                                key={topping.name}
+                                                                topping={topping}
+                                                                onInc={() => updateQty(editTarget, gi, ti, 1)}
+                                                                onDec={() => updateQty(editTarget, gi, ti, -1)}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </ScrollArea>
                     )}
@@ -557,7 +577,7 @@ export default function AddCartDialog({
                                 <div className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-zinc-800 px-1 sm:gap-2 sm:px-5">
                                     <button
                                         onClick={() => setCartQty((q) => Math.max(1, q - 1))}
-                                        className="flex h-11 w-9 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
+                                        className="flex h-11 w-9 cursor-pointer items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
                                     >
                                         −
                                     </button>
@@ -566,7 +586,7 @@ export default function AddCartDialog({
                                     </span>
                                     <button
                                         onClick={() => setCartQty((q) => q + 1)}
-                                        className="flex h-11 w-9 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
+                                        className="flex h-11 w-9 cursor-pointer items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
                                     >
                                         +
                                     </button>
