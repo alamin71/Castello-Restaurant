@@ -139,9 +139,9 @@ function PizzaPickerRow({
     onSelect: () => void;
 }) {
     return (
-        <div className="flex items-stretch gap-2 rounded-2xl border border-white/10 p-2 sm:gap-4 sm:p-3">
+        <div className="flex items-stretch gap-1.5 rounded-2xl border border-white/10 p-1.5 min-[400px]:gap-2 min-[400px]:p-2 sm:gap-4 sm:p-3">
             <div
-                className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-cover bg-center sm:h-36 sm:w-36 lg:h-52 lg:w-52"
+                className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-cover bg-center min-[400px]:h-24 min-[400px]:w-24 sm:h-36 sm:w-36 lg:h-52 lg:w-52"
                 style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
             >
                 <Image
@@ -152,18 +152,18 @@ function PizzaPickerRow({
                 />
             </div>
             <div className="w-px self-stretch bg-white/10" />
-            <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 px-1 text-center min-w-0 sm:gap-4 sm:py-4 sm:px-2">
+            <div className="flex flex-1 flex-col items-center justify-center gap-1.5 py-1.5 px-1 text-center min-w-0 min-[400px]:gap-2 min-[400px]:py-2 sm:gap-4 sm:py-4 sm:px-2">
                 <div>
-                    <p className="text-sm font-bold text-white sm:text-lg">{pizza.title}</p>
-                    <p className="text-xs text-zinc-500 line-clamp-1">
+                    <p className="text-xs font-bold text-white min-[400px]:text-sm sm:text-lg">{pizza.title}</p>
+                    <p className="text-[10px] text-zinc-500 line-clamp-1 min-[400px]:text-xs">
                         {pizza.description}
                     </p>
                 </div>
-                <div className="flex justify-center gap-2 sm:gap-4">
+                <div className="flex justify-center gap-1 min-[400px]:gap-2 sm:gap-4">
                     {pizza.sizes.map((s) => (
-                        <div key={s.label} className="text-xs text-zinc-400 sm:text-sm">
+                        <div key={s.label} className="text-[10px] text-zinc-400 min-[400px]:text-xs sm:text-sm">
                             <div>{formatSizeLabel(s.label)}</div>
-                            <div className="text-sm font-bold text-white sm:text-base">
+                            <div className="text-xs font-bold text-white min-[400px]:text-sm sm:text-base">
                                 {s.price.toLocaleString()} kr.
                             </div>
                         </div>
@@ -171,7 +171,7 @@ function PizzaPickerRow({
                 </div>
                 <button
                     onClick={onSelect}
-                    className="w-full cursor-pointer rounded-full bg-zinc-800 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 sm:py-2 sm:text-base"
+                    className="w-full cursor-pointer rounded-full bg-zinc-800 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-zinc-700 min-[400px]:text-sm sm:py-2 sm:text-base"
                 >
                     Select this one
                 </button>
@@ -398,12 +398,12 @@ export default function AddCartDialog({
                                 {/* Crust thumbnails — only relevant outside half & half mode */}
                                 {mode === "single" && (
                                     <>
-                                        <div className="flex justify-center gap-3 overflow-x-auto px-4 py-2 sm:px-6">
+                                        <div className="flex justify-center gap-2 overflow-x-auto px-4 py-2 sm:gap-3 sm:px-6">
                                             {CRUSTS.map((c, i) => (
                                                 <button
                                                     key={c.label}
                                                     onClick={() => setSelectedCrust(i)}
-                                                    className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border-2 transition-all ${selectedCrust === i
+                                                    className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 transition-all sm:h-14 sm:w-14 ${selectedCrust === i
                                                         ? "scale-105 border-secondary"
                                                         : "border-zinc-700 hover:border-zinc-500"
                                                         }`}

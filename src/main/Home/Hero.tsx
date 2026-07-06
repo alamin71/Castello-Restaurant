@@ -51,13 +51,15 @@ const Hero = () => {
                                 />
                             </div>
 
-                            <h3 className="text-white text-[10px] leading-tight sm:text-sm md:text-xl font-bold tracking-wide">
-                                {service.title}
-                            </h3>
+                            <div className="flex flex-col items-center gap-0.5">
+                                <h3 className="text-white text-[10px] leading-tight sm:text-sm md:text-xl font-bold tracking-wide">
+                                    {service.title}
+                                </h3>
 
-                            <p className="text-[#B5B5B5] hidden md:block md:text-sm lg:text-base leading-relaxed">
-                                {service.description}
-                            </p>
+                                <p className="text-[#B5B5B5] hidden md:block md:text-sm lg:text-base leading-snug">
+                                    {service.description}
+                                </p>
+                            </div>
                         </div>
                     ))}
                 </Container>
