@@ -307,7 +307,7 @@ export default function AddCartDialog({
 
                     {/* Header */}
                     {pickerFor ? (
-                        <div className="flex shrink-0 items-center gap-3 border-b border-zinc-800 px-6 py-3">
+                        <div className="flex shrink-0 items-center gap-3 border-b border-zinc-800 px-4 py-3 sm:px-6">
                             <button
                                 onClick={() => setPickerFor(null)}
                                 className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/10"
@@ -324,7 +324,7 @@ export default function AddCartDialog({
                             </div>
                         </div>
                     ) : (
-                        <div className="shrink-0 border-b border-zinc-800 py-3 pl-6 pr-14 text-left">
+                        <div className="shrink-0 border-b border-zinc-800 py-3 pl-4 pr-12 text-left sm:pl-6 sm:pr-14">
                             <h2 className="text-lg font-bold tracking-tight text-white">
                                 {titlePizza ? titlePizza.title : "Half & Half Pizza"}
                             </h2>
@@ -336,7 +336,7 @@ export default function AddCartDialog({
 
                     {pickerFor ? (
                         <ScrollArea className="flex-1 min-h-0">
-                            <div className="space-y-3 px-6 py-4">
+                            <div className="space-y-3 px-4 py-4 sm:px-6">
                                 {PIZZAS.map((p) => (
                                     <PizzaPickerRow
                                         key={p.title}
@@ -398,7 +398,7 @@ export default function AddCartDialog({
                                 {/* Crust thumbnails — only relevant outside half & half mode */}
                                 {mode === "single" && (
                                     <>
-                                        <div className="flex justify-center gap-3 overflow-x-auto px-6 py-2">
+                                        <div className="flex justify-center gap-3 overflow-x-auto px-4 py-2 sm:px-6">
                                             {CRUSTS.map((c, i) => (
                                                 <button
                                                     key={c.label}
@@ -439,7 +439,7 @@ export default function AddCartDialog({
 
                                 {/* 1st Half / 2nd Half tabs + active-half summary */}
                                 {mode === "half" && (
-                                    <div className="px-6 pb-6">
+                                    <div className="px-4 pb-4 sm:px-6 sm:pb-6">
                                         <div className="grid grid-cols-2 overflow-hidden rounded-full border border-white/15">
                                             {(["first", "second"] as HalfSlot[]).map((slot) => (
                                                 <button
@@ -476,13 +476,13 @@ export default function AddCartDialog({
                                 )}
 
                                 {/* Variants */}
-                                <div className="px-6 pt-6">
+                                <div className="px-4 pt-4 sm:px-6 sm:pt-6">
                                     <h3 className="text-sm font-semibold text-white">Variants</h3>
                                 </div>
                                 <RadioGroup
                                     value={selectedSize.toString()}
                                     onValueChange={(value) => setSelectedSize(Number(value))}
-                                    className="px-6 pb-6 pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2"
+                                    className="px-4 pb-4 pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:px-6 sm:pb-6"
                                 >
                                     {half1.pizza.sizes.map((s, i) => {
                                         const active = selectedSize === i;
@@ -518,11 +518,11 @@ export default function AddCartDialog({
                                 <Separator />
 
                                 {/* Topping groups for the currently active half */}
-                                <div className="px-6 pt-3">
+                                <div className="px-4 pt-3 sm:px-6">
                                     <h3 className="text-sm font-semibold text-white">Toppings</h3>
                                     <p className="text-xs text-zinc-500">You can customize toppings</p>
                                 </div>
-                                <div className="space-y-5 px-6 pt-4 pb-10">
+                                <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
                                     {activeState.groups.map((group, gi) => (
                                         <div key={group.label}>
                                             <div className="mb-2 flex items-baseline justify-between">
@@ -533,7 +533,7 @@ export default function AddCartDialog({
                                                     {group.surcharge}
                                                 </span>
                                             </div>
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
                                                 {group.items.map((topping, ti) => (
                                                     <ToppingCard
                                                         key={topping.name}
@@ -552,39 +552,41 @@ export default function AddCartDialog({
 
                     {/* Fixed Footer */}
                     <div className="border-t border-zinc-800 bg-zinc-900/95 px-3 py-3 backdrop-blur sm:px-6">
-                        <div className="flex items-center gap-1.5 sm:gap-3">
-                            <div className="flex h-10 shrink-0 items-center gap-1 rounded-full bg-zinc-800 px-2 sm:h-11 sm:gap-2 sm:px-5">
-                                <button
-                                    onClick={() => setCartQty((q) => Math.max(1, q - 1))}
-                                    className="flex h-6 w-6 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
-                                >
-                                    −
-                                </button>
-                                <span className="w-4 text-center text-xs font-bold text-white sm:text-sm">
-                                    {cartQty}
-                                </span>
-                                <button
-                                    onClick={() => setCartQty((q) => q + 1)}
-                                    className="flex h-6 w-6 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
-                                >
-                                    +
-                                </button>
-                            </div>
+                        <div className="flex flex-col gap-2 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-2 sm:gap-3">
+                            <div className="flex items-center gap-1.5 sm:gap-3">
+                                <div className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-zinc-800 px-1 sm:gap-2 sm:px-5">
+                                    <button
+                                        onClick={() => setCartQty((q) => Math.max(1, q - 1))}
+                                        className="flex h-11 w-9 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-4 text-center text-xs font-bold text-white sm:text-sm">
+                                        {cartQty}
+                                    </span>
+                                    <button
+                                        onClick={() => setCartQty((q) => q + 1)}
+                                        className="flex h-11 w-9 items-center justify-center text-base text-white transition-colors hover:text-secondary/90 sm:text-lg"
+                                    >
+                                        +
+                                    </button>
+                                </div>
 
-                            <span className="flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-zinc-800 px-2 text-xs font-bold text-white sm:h-11 sm:px-8 sm:text-sm lg:px-16">
-                                {total.toLocaleString()} ISK.
-                            </span>
+                                <span className="flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-zinc-800 px-2 text-xs font-bold text-white min-[400px]:flex-none sm:px-8 sm:text-sm lg:px-16">
+                                    {total.toLocaleString()} ISK.
+                                </span>
+                            </div>
 
                             {canAddToCart ? (
                                 <DialogClose asChild>
-                                    <button className="flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-secondary px-2 text-xs font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 sm:h-11 sm:px-4 sm:text-sm">
+                                    <button className="flex h-11 w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-secondary px-2 text-xs font-bold text-white transition-all hover:bg-secondary/90 active:scale-95 min-[400px]:w-auto min-[400px]:flex-1 sm:px-4 sm:text-sm">
                                         Add to cart
                                     </button>
                                 </DialogClose>
                             ) : (
                                 <button
                                     disabled
-                                    className="flex h-10 min-w-0 flex-1 cursor-not-allowed items-center justify-center whitespace-nowrap rounded-full bg-secondary/40 px-2 text-xs font-bold text-white/60 sm:h-11 sm:px-4 sm:text-sm"
+                                    className="flex h-11 w-full cursor-not-allowed items-center justify-center whitespace-nowrap rounded-full bg-secondary/40 px-2 text-xs font-bold text-white/60 min-[400px]:w-auto min-[400px]:flex-1 sm:px-4 sm:text-sm"
                                 >
                                     Add to cart
                                 </button>
