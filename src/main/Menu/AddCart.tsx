@@ -316,7 +316,7 @@ export default function AddCartDialog({
                     trigger
                 ) : variant === "full" ? (
                     <button
-                        className="w-full h-10 flex items-center justify-center rounded-full bg-secondary text-white text-sm font-semibold hover:bg-secondary/90 active:scale-95 transition-all cursor-pointer"
+                        className="w-full h-10 flex items-center justify-center rounded-full bg-[#222222] text-white text-sm font-semibold hover:bg-[#2c2c2c] active:scale-95 transition-all cursor-pointer"
                     >
                         Add to Cart
                     </button>
