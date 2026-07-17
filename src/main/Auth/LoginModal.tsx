@@ -220,7 +220,7 @@ export default function LoginModal() {
               </label>
               <div className="flex items-stretch gap-0 rounded-xl border border-white/20 overflow-hidden bg-white/5">
                 <Select value={countryIso} onValueChange={setCountryIso}>
-                  <SelectTrigger className="h-12 w-32 shrink-0 bg-transparent border-0 border-r border-white/20 rounded-none text-white text-sm px-3 focus-visible:ring-0">
+                  <SelectTrigger className="h-12! w-32 shrink-0 bg-transparent border-0 border-r border-white/20 rounded-none text-white text-sm px-3 focus-visible:ring-0">
                     <SelectValue>
                       <span className="flex items-center gap-1.5">
                         <span>{selectedCountry.flag}</span>
@@ -228,7 +228,7 @@ export default function LoginModal() {
                       </span>
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1c1c1e] border border-white/20 text-white">
+                  <SelectContent className="max-h-64! bg-[#1c1c1e] border border-white/20 text-white">
                     {COUNTRIES.map((c) => (
                       <SelectItem
                         key={c.iso2}
