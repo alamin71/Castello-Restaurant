@@ -46,11 +46,16 @@ function CommandInput({
 
 function CommandList({
   className,
+  onWheel,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.List>) {
   return (
     <CommandPrimitive.List
       data-slot="command-list"
+      onWheel={(e) => {
+        e.currentTarget.scrollTop += e.deltaY;
+        onWheel?.(e);
+      }}
       className={cn(
         "max-h-64 scroll-py-1 overflow-x-hidden overflow-y-auto overscroll-contain",
         className
