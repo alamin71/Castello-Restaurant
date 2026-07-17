@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { isAxiosError } from "axios";
+import { allCountries } from "country-telephone-data";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,26 +14,50 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/auth.store";
+import { useSendOtp } from "@/hooks/mutations/useSendOtp";
+import { useVerifyOtp } from "@/hooks/mutations/useVerifyOtp";
+import { useResendOtp } from "@/hooks/mutations/useResendOtp";
 import { toast } from "sonner";
 
-const COUNTRIES = [
-  { code: "+354", flag: "🇮🇸", name: "Iceland" },
-  { code: "+1", flag: "🇺🇸", name: "USA" },
-  { code: "+44", flag: "🇬🇧", name: "UK" },
-  { code: "+45", flag: "🇩🇰", name: "Denmark" },
-  { code: "+47", flag: "🇳🇴", name: "Norway" },
-  { code: "+46", flag: "🇸🇪", name: "Sweden" },
-];
+function isoToFlagEmoji(iso2: string) {
+  return iso2
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+}
 
-const MOCK_OTP = "123456";
+const COUNTRIES = allCountries
+  .map((c) => ({
+    iso2: c.iso2,
+    code: `+${c.dialCode}`,
+    flag: isoToFlagEmoji(c.iso2),
+    name: c.name.replace(/\s*\(.*\)$/, ""),
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const DEFAULT_COUNTRY_ISO = "is";
+
 const RESEND_SECONDS = 60;
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (isAxiosError(error)) {
+    return error.response?.data?.message ?? fallback;
+  }
+  return fallback;
+}
+
 export default function LoginModal() {
-  const { isLoginModalOpen, closeLoginModal, login } = useAuth();
+  const { isLoginModalOpen, closeLoginModal } = useAuth();
+  const setAuth = useAuthStore((s) => s.setAuth);
+
+  const sendOtp = useSendOtp();
+  const verifyOtp = useVerifyOtp();
+  const resendOtp = useResendOtp();
 
   const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [countryCode, setCountryCode] = useState("+354");
+  const [countryIso, setCountryIso] = useState(DEFAULT_COUNTRY_ISO);
   const [phone, setPhone] = useState("");
+  const [phoneToken, setPhoneToken] = useState("");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(RESEND_SECONDS);
@@ -40,7 +66,8 @@ export default function LoginModal() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedCountry =
-    COUNTRIES.find((c) => c.code === countryCode) ?? COUNTRIES[0];
+    COUNTRIES.find((c) => c.iso2 === countryIso) ??
+    COUNTRIES.find((c) => c.iso2 === DEFAULT_COUNTRY_ISO)!;
 
   function startInterval() {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -65,6 +92,7 @@ export default function LoginModal() {
   function handleClose() {
     setStep("phone");
     setPhone("");
+    setPhoneToken("");
     setOtp(["", "", "", "", "", ""]);
     setError("");
     if (timerRef.current) clearInterval(timerRef.current);
@@ -77,8 +105,19 @@ export default function LoginModal() {
       return;
     }
     setError("");
-    setCountdown(RESEND_SECONDS);
-    setStep("otp");
+    sendOtp.mutate(
+      { phone: `${selectedCountry.code}${phone}` },
+      {
+        onSuccess: (data) => {
+          setPhoneToken(data.phoneToken);
+          setCountdown(RESEND_SECONDS);
+          setStep("otp");
+        },
+        onError: (err) => {
+          setError(getErrorMessage(err, "Could not send OTP. Please try again."));
+        },
+      }
+    );
   }
 
   function handleOtpChange(index: number, value: string) {
@@ -112,11 +151,19 @@ export default function LoginModal() {
   }
 
   function handleResend() {
-    setOtp(["", "", "", "", "", ""]);
     setError("");
-    setCountdown(RESEND_SECONDS);
-    otpRefs.current[0]?.focus();
-    startInterval();
+    resendOtp.mutate(phoneToken, {
+      onSuccess: (data) => {
+        setPhoneToken(data.phoneToken);
+        setOtp(["", "", "", "", "", ""]);
+        setCountdown(RESEND_SECONDS);
+        otpRefs.current[0]?.focus();
+        startInterval();
+      },
+      onError: (err) => {
+        setError(getErrorMessage(err, "Could not resend OTP. Please try again."));
+      },
+    });
   }
 
   function handleVerify() {
@@ -125,16 +172,23 @@ export default function LoginModal() {
       setError("Please enter the complete 6-digit code");
       return;
     }
-    if (otpValue !== MOCK_OTP) {
-      setError("Invalid code. Use 123456 for demo.");
-      return;
-    }
-    login(phone, countryCode);
-    toast.success("otp verified! Login successful", {
-      duration: 3000,
-      closeButton: false,
-    });
-    handleClose();
+    setError("");
+    verifyOtp.mutate(
+      { otp: Number(otpValue), phoneToken },
+      {
+        onSuccess: (data) => {
+          setAuth(data.accessToken, data.refreshToken, phone, selectedCountry.code);
+          toast.success("OTP verified! Login successful", {
+            duration: 3000,
+            closeButton: false,
+          });
+          handleClose();
+        },
+        onError: (err) => {
+          setError(getErrorMessage(err, "Invalid code. Please try again."));
+        },
+      }
+    );
   }
 
   const timerLabel = `0:${String(countdown).padStart(2, "0")}`;
@@ -165,7 +219,7 @@ export default function LoginModal() {
                 Phone number
               </label>
               <div className="flex items-stretch gap-0 rounded-xl border border-white/20 overflow-hidden bg-white/5">
-                <Select value={countryCode} onValueChange={setCountryCode}>
+                <Select value={countryIso} onValueChange={setCountryIso}>
                   <SelectTrigger className="h-12 w-32 shrink-0 bg-transparent border-0 border-r border-white/20 rounded-none text-white text-sm px-3 focus-visible:ring-0">
                     <SelectValue>
                       <span className="flex items-center gap-1.5">
@@ -177,8 +231,8 @@ export default function LoginModal() {
                   <SelectContent className="bg-[#1c1c1e] border border-white/20 text-white">
                     {COUNTRIES.map((c) => (
                       <SelectItem
-                        key={c.code}
-                        value={c.code}
+                        key={c.iso2}
+                        value={c.iso2}
                         className="text-white focus:bg-white/10 focus:text-white cursor-pointer"
                       >
                         {c.flag} {c.code} {c.name}
@@ -204,9 +258,10 @@ export default function LoginModal() {
 
             <Button
               onClick={handlePhoneSubmit}
+              disabled={sendOtp.isPending}
               className="w-full h-12 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-full text-base"
             >
-              Log in
+              {sendOtp.isPending ? "Sending..." : "Log in"}
             </Button>
           </div>
         ) : (
@@ -227,7 +282,7 @@ export default function LoginModal() {
             <div className="text-center">
               <h2 className="text-2xl pt-4 font-bold text-white">Verify OTP</h2>
               <p className="text-sm text-white/50 mt-1">
-                Code sent to {selectedCountry.flag} {countryCode} {phone}
+                Code sent to {selectedCountry.flag} {selectedCountry.code} {phone}
               </p>
             </div>
 
@@ -255,14 +310,14 @@ export default function LoginModal() {
                 ))}
               </div>
               {error && <p className="text-secondary text-xs mt-1">{error}</p>}
-              <p className="text-white/30 text-xs">Demo: enter 123456</p>
             </div>
 
             <Button
               onClick={handleVerify}
+              disabled={verifyOtp.isPending}
               className="w-full h-12 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-full text-base"
             >
-              Verify
+              {verifyOtp.isPending ? "Verifying..." : "Verify"}
             </Button>
 
             {/* Timer + Resend */}
@@ -272,14 +327,14 @@ export default function LoginModal() {
               )}
               <button
                 onClick={handleResend}
-                disabled={countdown > 0}
+                disabled={countdown > 0 || resendOtp.isPending}
                 className={`text-sm transition-colors ${
-                  countdown > 0
+                  countdown > 0 || resendOtp.isPending
                     ? "text-white/20 cursor-not-allowed"
                     : "text-secondary hover:text-secondary/70 cursor-pointer"
                 }`}
               >
-                Resend OTP
+                {resendOtp.isPending ? "Resending..." : "Resend OTP"}
               </button>
             </div>
           </div>

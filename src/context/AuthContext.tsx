@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
+import { useAuthStore } from "@/store/auth.store";
 
 interface User {
     phone: string;
@@ -13,33 +14,30 @@ interface AuthContextType {
     isLoginModalOpen: boolean;
     openLoginModal: () => void;
     closeLoginModal: () => void;
-    login: (phone: string, countryCode: string) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const accessToken = useAuthStore((s) => s.accessToken);
+    const phone = useAuthStore((s) => s.phone);
+    const countryCode = useAuthStore((s) => s.countryCode);
+    const clearAuth = useAuthStore((s) => s.clearAuth);
 
     const openLoginModal = () => setIsLoginModalOpen(true);
     const closeLoginModal = () => setIsLoginModalOpen(false);
 
-    const login = (phone: string, countryCode: string) => {
-        setUser({ phone, countryCode });
-        setIsLoggedIn(true);
-        setIsLoginModalOpen(false);
-    };
+    const isLoggedIn = !!accessToken;
+    const user = isLoggedIn && phone && countryCode ? { phone, countryCode } : null;
 
     const logout = () => {
-        setUser(null);
-        setIsLoggedIn(false);
+        clearAuth();
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, user, isLoginModalOpen, openLoginModal, closeLoginModal, login, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn, user, isLoginModalOpen, openLoginModal, closeLoginModal, logout }}>
             {children}
         </AuthContext.Provider>
     );
