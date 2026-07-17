@@ -14,7 +14,7 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+        "flex h-full min-h-0 w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
         className
       )}
       {...props}
@@ -31,7 +31,7 @@ function CommandInput({
       data-slot="command-input-wrapper"
       className="flex items-center gap-2 border-b border-white/10 px-3"
     >
-      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <SearchIcon className="size-4 shrink-0 text-white/40" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
@@ -52,7 +52,7 @@ function CommandList({
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        "max-h-64 scroll-py-1 overflow-x-hidden overflow-y-auto",
+        "max-h-64 scroll-py-1 overflow-x-hidden overflow-y-auto overscroll-contain",
         className
       )}
       {...props}
