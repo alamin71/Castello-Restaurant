@@ -3,16 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import { isAxiosError } from "axios";
 import { allCountries } from "country-telephone-data";
+import { ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthStore } from "@/store/auth.store";
 import { useSendOtp } from "@/hooks/mutations/useSendOtp";
@@ -56,6 +58,7 @@ export default function LoginModal() {
 
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [countryIso, setCountryIso] = useState(DEFAULT_COUNTRY_ISO);
+  const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   const [phone, setPhone] = useState("");
   const [phoneToken, setPhoneToken] = useState("");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -219,31 +222,48 @@ export default function LoginModal() {
                 Phone number
               </label>
               <div className="flex items-stretch gap-0 rounded-xl border border-white/20 overflow-hidden bg-white/5">
-                <Select value={countryIso} onValueChange={setCountryIso}>
-                  <SelectTrigger className="h-12! w-32 shrink-0 bg-transparent border-0 border-r border-white/20 rounded-none text-white text-sm px-3 focus-visible:ring-0">
-                    <SelectValue>
-                      <span className="flex items-center gap-1.5">
-                        <span>{selectedCountry.flag}</span>
-                        <span>{selectedCountry.code}</span>
-                      </span>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent
-                    position="popper"
+                <Popover open={countryPickerOpen} onOpenChange={setCountryPickerOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex h-12 w-32 shrink-0 cursor-pointer items-center gap-1.5 border-r border-white/20 bg-transparent px-3 text-sm text-white outline-none"
+                    >
+                      <span>{selectedCountry.flag}</span>
+                      <span>{selectedCountry.code}</span>
+                      <ChevronDown className="ml-auto size-4 shrink-0 opacity-60" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
                     sideOffset={4}
-                    className="max-h-64! bg-[#1c1c1e] border border-white/20 text-white"
+                    className="w-64 border border-white/20 bg-[#1c1c1e] text-white"
                   >
-                    {COUNTRIES.map((c) => (
-                      <SelectItem
-                        key={c.iso2}
-                        value={c.iso2}
-                        className="text-white focus:bg-white/10 focus:text-white cursor-pointer"
-                      >
-                        {c.flag} {c.code} {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <Command className="bg-transparent">
+                      <CommandInput
+                        placeholder="Search country..."
+                        className="text-white placeholder:text-white/40"
+                      />
+                      <CommandList>
+                        <CommandEmpty>No country found.</CommandEmpty>
+                        {COUNTRIES.map((c) => (
+                          <CommandItem
+                            key={c.iso2}
+                            value={`${c.name} ${c.code}`}
+                            onSelect={() => {
+                              setCountryIso(c.iso2);
+                              setCountryPickerOpen(false);
+                            }}
+                            className="cursor-pointer text-white data-[selected=true]:bg-white/10 data-[selected=true]:text-white"
+                          >
+                            <span>{c.flag}</span>
+                            <span className="shrink-0">{c.code}</span>
+                            <span className="truncate">{c.name}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
 
                 <Input
                   type="tel"
