@@ -228,7 +228,11 @@ export default function LoginModal() {
                       </span>
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="max-h-64! bg-[#1c1c1e] border border-white/20 text-white">
+                  <SelectContent
+                    position="popper"
+                    sideOffset={4}
+                    className="max-h-64! bg-[#1c1c1e] border border-white/20 text-white"
+                  >
                     {COUNTRIES.map((c) => (
                       <SelectItem
                         key={c.iso2}
