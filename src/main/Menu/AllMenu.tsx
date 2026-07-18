@@ -22,8 +22,12 @@ const AllMenu = () => {
     const { data: offerCategories } = useOfferCategories();
 
     const tabs: NavTab[] = useMemo(() => {
-        const offersTab: NavTab = offerCategories?.[0]
-            ? { id: "offers", label: "Offers", image: offerCategories[0].image }
+        // Prefer the offer category that actually has offers assigned to it.
+        const featuredOfferCategory =
+            (offerCategories ?? []).find((oc) => oc.assignedOffers > 0) ?? offerCategories?.[0];
+
+        const offersTab: NavTab = featuredOfferCategory
+            ? { id: "offers", label: "Offers", image: featuredOfferCategory.image }
             : { id: "offers", label: "Offers", icon: OfferIcon };
 
         return [
@@ -109,24 +113,25 @@ const AllMenu = () => {
                                         {Icon ? (
                                             <Icon />
                                         ) : tab.image ? (
-                                            isActive ? (
-                                                <div
-                                                    aria-hidden
-                                                    className="block h-6 w-6 shrink-0 bg-secondary"
-                                                    style={{
-                                                        WebkitMaskImage: `url(${tab.image})`,
-                                                        maskImage: `url(${tab.image})`,
-                                                        WebkitMaskSize: "contain",
-                                                        maskSize: "contain",
-                                                        WebkitMaskRepeat: "no-repeat",
-                                                        maskRepeat: "no-repeat",
-                                                        WebkitMaskPosition: "center",
-                                                        maskPosition: "center",
-                                                    }}
-                                                />
-                                            ) : (
+                                            <>
                                                 <Image src={tab.image} alt={tab.label} fill className="object-contain" />
-                                            )
+                                                {isActive && (
+                                                    <div
+                                                        aria-hidden
+                                                        className="absolute inset-0 block bg-secondary"
+                                                        style={{
+                                                            WebkitMaskImage: `url(${tab.image})`,
+                                                            maskImage: `url(${tab.image})`,
+                                                            WebkitMaskSize: "contain",
+                                                            maskSize: "contain",
+                                                            WebkitMaskRepeat: "no-repeat",
+                                                            maskRepeat: "no-repeat",
+                                                            WebkitMaskPosition: "center",
+                                                            maskPosition: "center",
+                                                        }}
+                                                    />
+                                                )}
+                                            </>
                                         ) : null}
                                     </span>
                                     <span className={cn(
