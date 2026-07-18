@@ -110,9 +110,9 @@ const AllMenu = () => {
                                             <Icon />
                                         ) : tab.image ? (
                                             isActive ? (
-                                                <span
+                                                <div
                                                     aria-hidden
-                                                    className="h-6 w-6 bg-secondary"
+                                                    className="block h-6 w-6 shrink-0 bg-secondary"
                                                     style={{
                                                         WebkitMaskImage: `url(${tab.image})`,
                                                         maskImage: `url(${tab.image})`,
