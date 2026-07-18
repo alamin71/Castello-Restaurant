@@ -18,7 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { TOPPING_GROUPS, productToPizzaItem, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
+import { TOPPING_GROUPS, productToMenuItem, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const CRUSTS = [
@@ -198,7 +198,7 @@ export default function AddCartDialog({
     const { data: products } = useProducts();
     const pizzaOptions: PizzaItem[] = (products ?? [])
         .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
-        .map(productToPizzaItem);
+        .map(productToMenuItem);
     const [open, setOpen] = useState(false);
 
     const [selectedSize, setSelectedSize] = useState(0);

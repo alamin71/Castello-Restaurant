@@ -4,14 +4,14 @@ import Image from "next/image";
 import FoodCard from "@/components/shared/FoodCard";
 import Container from "@/components/shared/Container";
 import AddCartDialog from "./AddCart";
-import { MAKE_YOUR_OWN_PIZZA, productToPizzaItem } from "./pizzaData";
+import { MAKE_YOUR_OWN_PIZZA, productToMenuItem } from "./pizzaData";
 import { useProducts } from "@/hooks/queries/useProducts";
 
 const Pizzas = () => {
     const { data: products } = useProducts();
     const pizzas = (products ?? [])
         .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
-        .map(productToPizzaItem);
+        .map(productToMenuItem);
 
     return (
         <Container className="mb-12">

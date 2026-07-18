@@ -106,7 +106,7 @@ export const MAKE_YOUR_OWN_PIZZA: PizzaItem = {
 // Maps a real API product (single or variant priced) into the shape the menu UI already
 // knows how to render. Toppings are matched by name against TOPPING_GROUPS as a stand-in
 // until the real topping-categories/items API is wired in.
-export function productToPizzaItem(product: Product): PizzaItem {
+export function productToMenuItem(product: Product): PizzaItem {
     const sizes: SizeOption[] =
         product.type === "variant" && product.variants.length > 0
             ? product.variants.map((v) => ({

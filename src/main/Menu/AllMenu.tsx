@@ -4,9 +4,11 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useCategories } from "@/hooks/queries/useCategories";
+import { useOfferCategories } from "@/hooks/queries/useOfferCategories";
 import OfferIcon from "../../../public/icons/offer-icon";
 import SpecialOffer from "../Home/SpecialOffer";
 import Pizzas from "./Pizza";
+import CategoryProducts from "./CategoryProducts";
 
 interface NavTab {
     id: string;
@@ -15,21 +17,31 @@ interface NavTab {
     image?: string;
 }
 
-const OFFERS_TAB: NavTab = { id: "offers", label: "Offers", icon: OfferIcon };
-
 const AllMenu = () => {
     const { data: categories } = useCategories();
+    const { data: offerCategories } = useOfferCategories();
 
-    const tabs: NavTab[] = useMemo(() => [
-        OFFERS_TAB,
-        ...[...(categories ?? [])]
-            .sort((a, b) => a.sortOrder - b.sortOrder)
-            .map((c) => ({
-                id: c.name.toLowerCase() === "pizza" ? "pizza" : c.categoryId,
-                label: c.name,
-                image: c.image,
-            })),
-    ], [categories]);
+    const tabs: NavTab[] = useMemo(() => {
+        const offersTab: NavTab = offerCategories?.[0]
+            ? { id: "offers", label: "Offers", image: offerCategories[0].image }
+            : { id: "offers", label: "Offers", icon: OfferIcon };
+
+        return [
+            offersTab,
+            ...[...(categories ?? [])]
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((c) => ({
+                    id: c.name.toLowerCase() === "pizza" ? "pizza" : c.categoryId,
+                    label: c.name,
+                    image: c.image,
+                })),
+        ];
+    }, [categories, offerCategories]);
+
+    const otherCategories = useMemo(
+        () => (categories ?? []).filter((c) => c.name.toLowerCase() !== "pizza"),
+        [categories]
+    );
 
     const [active, setActive] = useState("offers");
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -97,7 +109,24 @@ const AllMenu = () => {
                                         {Icon ? (
                                             <Icon />
                                         ) : tab.image ? (
-                                            <Image src={tab.image} alt={tab.label} fill className="object-contain" />
+                                            isActive ? (
+                                                <span
+                                                    aria-hidden
+                                                    className="h-6 w-6 bg-secondary"
+                                                    style={{
+                                                        WebkitMaskImage: `url(${tab.image})`,
+                                                        maskImage: `url(${tab.image})`,
+                                                        WebkitMaskSize: "contain",
+                                                        maskSize: "contain",
+                                                        WebkitMaskRepeat: "no-repeat",
+                                                        maskRepeat: "no-repeat",
+                                                        WebkitMaskPosition: "center",
+                                                        maskPosition: "center",
+                                                    }}
+                                                />
+                                            ) : (
+                                                <Image src={tab.image} alt={tab.label} fill className="object-contain" />
+                                            )
                                         ) : null}
                                     </span>
                                     <span className={cn(
@@ -121,6 +150,15 @@ const AllMenu = () => {
             <div ref={(el) => { sectionRefs.current["pizza"] = el; }} style={{ scrollMarginTop: "170px" }}>
                 <Pizzas />
             </div>
+            {otherCategories.map((c) => (
+                <div
+                    key={c.categoryId}
+                    ref={(el) => { sectionRefs.current[c.categoryId] = el; }}
+                    style={{ scrollMarginTop: "170px" }}
+                >
+                    <CategoryProducts categoryName={c.name} />
+                </div>
+            ))}
         </section>
     );
 };
