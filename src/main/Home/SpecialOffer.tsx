@@ -1,11 +1,12 @@
 "use client";
 
 import FoodCard from "@/components/shared/FoodCard";
+import FoodCardSkeleton from "@/components/shared/FoodCardSkeleton";
 import Container from "@/components/shared/Container";
 import { useOffers } from "@/hooks/queries/useOffers";
 
 const SpecialOffer = () => {
-  const { data: offers } = useOffers();
+  const { data: offers, isLoading } = useOffers();
 
   return (
     <Container className="py-12">
@@ -13,15 +14,17 @@ const SpecialOffer = () => {
         Special Offers
       </h2>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {(offers ?? []).map((offer) => (
-          <FoodCard
-            key={offer._id}
-            title={offer.title}
-            description={offer.description}
-            price={offer.price}
-            image={offer.mainImage}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => <FoodCardSkeleton key={i} />)
+          : (offers ?? []).map((offer) => (
+            <FoodCard
+              key={offer._id}
+              title={offer.title}
+              description={offer.description}
+              price={offer.price}
+              image={offer.mainImage}
+            />
+          ))}
       </div>
     </Container>
   );

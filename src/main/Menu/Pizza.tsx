@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import FoodCard from "@/components/shared/FoodCard";
+import FoodCardSkeleton from "@/components/shared/FoodCardSkeleton";
 import Container from "@/components/shared/Container";
 import AddCartDialog from "./AddCart";
 import { MAKE_YOUR_OWN_PIZZA, productToMenuItem } from "./pizzaData";
 import { useProducts } from "@/hooks/queries/useProducts";
 
 const Pizzas = () => {
-    const { data: products } = useProducts();
+    const { data: products, isLoading } = useProducts();
     const pizzas = (products ?? [])
         .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
         .map(productToMenuItem);
@@ -56,18 +57,20 @@ const Pizzas = () => {
             </div>
 
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {pizzas.map((pizza, i) => (
-                    <FoodCard
-                        key={i}
-                        title={pizza.title}
-                        description={pizza.description}
-                        badge={pizza.badge}
-                        sizes={pizza.sizes}
-                        toppings={pizza.toppings}
-                        allowHalfHalf
-                        image={pizza.image ?? "/assets/pizza.png"}
-                    />
-                ))}
+                {isLoading
+                    ? Array.from({ length: 8 }).map((_, i) => <FoodCardSkeleton key={i} />)
+                    : pizzas.map((pizza, i) => (
+                        <FoodCard
+                            key={i}
+                            title={pizza.title}
+                            description={pizza.description}
+                            badge={pizza.badge}
+                            sizes={pizza.sizes}
+                            toppings={pizza.toppings}
+                            allowHalfHalf
+                            image={pizza.image ?? "/assets/pizza.png"}
+                        />
+                    ))}
             </div>
         </Container>
     );
