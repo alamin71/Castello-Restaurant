@@ -16,7 +16,7 @@ export default function CategoryProducts({ categoryName }: { categoryName: strin
 
     return (
         <Container className="mb-12">
-            <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold my-12">{categoryName}</h2>
+            <h2 className="text-white text-2xl font-bold my-12">{categoryName}</h2>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {isLoading
                     ? Array.from({ length: 4 }).map((_, i) => <FoodCardSkeleton key={i} />)

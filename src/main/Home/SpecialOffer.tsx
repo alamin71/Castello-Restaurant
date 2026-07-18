@@ -10,7 +10,7 @@ const SpecialOffer = () => {
 
   return (
     <Container className="py-12">
-      <h2 className="text-white text-3xl sm:text-4xl md:text-5xl text-left font-bold mb-12">
+      <h2 className="text-white text-2xl text-left font-bold mb-12">
         Special Offers
       </h2>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

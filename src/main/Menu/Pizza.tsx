@@ -16,7 +16,7 @@ const Pizzas = () => {
 
     return (
         <Container className="mb-12">
-            <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold my-12">Pizzas</h2>
+            <h2 className="text-white text-2xl font-bold my-12">Pizzas</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <AddCartDialog
