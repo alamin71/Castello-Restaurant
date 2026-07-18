@@ -151,17 +151,17 @@ const AllMenu = () => {
             </div>
 
             {/* Sections */}
-            <div ref={(el) => { sectionRefs.current["offers"] = el; }} style={{ scrollMarginTop: "170px" }}>
+            <div ref={(el) => { sectionRefs.current["offers"] = el; }} style={{ scrollMarginTop: "210px" }}>
                 <SpecialOffer />
             </div>
-            <div ref={(el) => { sectionRefs.current["pizza"] = el; }} style={{ scrollMarginTop: "170px" }}>
+            <div ref={(el) => { sectionRefs.current["pizza"] = el; }} style={{ scrollMarginTop: "210px" }}>
                 <Pizzas />
             </div>
             {otherCategories.map((c) => (
                 <div
                     key={c.categoryId}
                     ref={(el) => { sectionRefs.current[c.categoryId] = el; }}
-                    style={{ scrollMarginTop: "170px" }}
+                    style={{ scrollMarginTop: "210px" }}
                 >
                     <CategoryProducts categoryName={c.name} />
                 </div>
