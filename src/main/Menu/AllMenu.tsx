@@ -17,6 +17,12 @@ interface NavTab {
     image?: string;
 }
 
+// Recolors any icon image to the brand orange (#FF4D00): first flattens it to a solid
+// black silhouette (brightness/saturate), then colorizes that black to the target hue.
+// Works on already-rendered pixels, so — unlike CSS masks — it needs no extra cross-origin fetch.
+const ACTIVE_ICON_FILTER =
+    "brightness(0) saturate(100%) invert(27%) sepia(97%) saturate(7466%) hue-rotate(7deg) brightness(103%) contrast(105%)";
+
 const AllMenu = () => {
     const { data: categories } = useCategories();
     const { data: offerCategories } = useOfferCategories();
@@ -109,33 +115,21 @@ const AllMenu = () => {
                                             : "text-white hover:text-white/80"
                                     )}
                                 >
-                                    <span className={cn("relative flex h-6 w-6 items-center justify-center transition-transform duration-200", isActive ? "scale-110" : "group-hover:scale-105")}>
+                                    <span className={cn("relative flex h-9 w-9 items-center justify-center transition-transform duration-200", isActive ? "scale-110" : "group-hover:scale-105")}>
                                         {Icon ? (
                                             <Icon />
                                         ) : tab.image ? (
-                                            <>
-                                                <Image src={tab.image} alt={tab.label} fill className="object-contain" />
-                                                {isActive && (
-                                                    <div
-                                                        aria-hidden
-                                                        className="absolute inset-0 block bg-secondary"
-                                                        style={{
-                                                            WebkitMaskImage: `url(${tab.image})`,
-                                                            maskImage: `url(${tab.image})`,
-                                                            WebkitMaskSize: "contain",
-                                                            maskSize: "contain",
-                                                            WebkitMaskRepeat: "no-repeat",
-                                                            maskRepeat: "no-repeat",
-                                                            WebkitMaskPosition: "center",
-                                                            maskPosition: "center",
-                                                        }}
-                                                    />
-                                                )}
-                                            </>
+                                            <Image
+                                                src={tab.image}
+                                                alt={tab.label}
+                                                fill
+                                                className="object-contain"
+                                                style={isActive ? { filter: ACTIVE_ICON_FILTER } : undefined}
+                                            />
                                         ) : null}
                                     </span>
                                     <span className={cn(
-                                        "font-sans text-sm font-semibold tracking-wide whitespace-nowrap leading-none",
+                                        "font-sans text-base font-semibold tracking-wide whitespace-nowrap leading-none",
                                         isActive ? "text-secondary" : "text-zinc-500 group-hover:text-zinc-300"
                                     )}>
                                         {tab.label}
