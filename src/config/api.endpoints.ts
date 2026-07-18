@@ -4,4 +4,7 @@ export const API = {
         verifyOtp: "/auth/phone/verify-otp",
         resendOtp: "/auth/phone/resend-otp",
     },
+    menu: {
+        categories: "/admin/menu/categories",
+    },
 };

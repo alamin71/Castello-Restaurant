@@ -1,10 +1,3 @@
-export interface ApiEnvelope<T> {
-    success: boolean;
-    message: string;
-    statusCode: number;
-    data: T;
-}
-
 export interface SendOtpPayload {
     phone: string;
 }

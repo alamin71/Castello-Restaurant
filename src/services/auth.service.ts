@@ -1,7 +1,7 @@
 import apiClient from "@/lib/axios";
 import { API } from "@/config/api.endpoints";
+import type { ApiEnvelope } from "@/types/api.types";
 import type {
-    ApiEnvelope,
     ResendOtpResponse,
     SendOtpPayload,
     SendOtpResponse,
