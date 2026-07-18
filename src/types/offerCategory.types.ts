@@ -1,13 +1,6 @@
-// Lightweight category reference embedded in products/offers responses.
-export interface CategoryRef {
+export interface OfferCategory {
     _id: string;
-    categoryId: string;
-    name: string;
-}
-
-export interface Category {
-    _id: string;
-    categoryId: string;
+    offerCategoryId: string;
     name: string;
     image: string;
     status: "active" | "inactive";
@@ -15,10 +8,10 @@ export interface Category {
     sortOrder: number;
     createdAt: string;
     updatedAt: string;
-    totalProducts: number;
+    assignedOffers: number;
 }
 
-export interface ListCategoriesParams {
+export interface ListOfferCategoriesParams {
     page?: number;
     limit?: number;
     status?: "active" | "inactive";

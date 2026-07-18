@@ -6,5 +6,10 @@ export const API = {
     },
     menu: {
         categories: "/admin/menu/categories",
+        products: "/admin/menu/products",
+    },
+    promotions: {
+        offerCategories: "/admin/promotions/offer-categories",
+        offers: "/admin/promotions/offers",
     },
 };
