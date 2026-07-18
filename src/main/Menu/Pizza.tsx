@@ -1,10 +1,18 @@
+"use client";
+
 import Image from "next/image";
 import FoodCard from "@/components/shared/FoodCard";
 import Container from "@/components/shared/Container";
 import AddCartDialog from "./AddCart";
-import { MAKE_YOUR_OWN_PIZZA, PIZZAS } from "./pizzaData";
+import { MAKE_YOUR_OWN_PIZZA, productToPizzaItem } from "./pizzaData";
+import { useProducts } from "@/hooks/queries/useProducts";
 
 const Pizzas = () => {
+    const { data: products } = useProducts();
+    const pizzas = (products ?? [])
+        .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
+        .map(productToPizzaItem);
+
     return (
         <Container className="mb-12">
             <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold my-12">Pizzas</h2>
@@ -48,7 +56,7 @@ const Pizzas = () => {
             </div>
 
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {PIZZAS.map((pizza, i) => (
+                {pizzas.map((pizza, i) => (
                     <FoodCard
                         key={i}
                         title={pizza.title}

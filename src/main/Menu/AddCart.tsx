@@ -3,6 +3,7 @@
 import { isValidElement, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
+import { useProducts } from "@/hooks/queries/useProducts";
 
 import {
     Dialog,
@@ -17,7 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { PIZZAS, TOPPING_GROUPS, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
+import { TOPPING_GROUPS, productToPizzaItem, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const CRUSTS = [
@@ -194,6 +195,10 @@ export default function AddCartDialog({
     trigger?: ReactNode;
 }) {
     const { addToCart } = useCart();
+    const { data: products } = useProducts();
+    const pizzaOptions: PizzaItem[] = (products ?? [])
+        .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
+        .map(productToPizzaItem);
     const [open, setOpen] = useState(false);
 
     const [selectedSize, setSelectedSize] = useState(0);
@@ -364,7 +369,7 @@ export default function AddCartDialog({
                     {pickerFor ? (
                         <ScrollArea className="flex-1 min-h-0">
                             <div className="space-y-3 px-4 py-4 sm:px-6">
-                                {PIZZAS.map((p) => (
+                                {pizzaOptions.map((p) => (
                                     <PizzaPickerRow
                                         key={p.title}
                                         pizza={p}

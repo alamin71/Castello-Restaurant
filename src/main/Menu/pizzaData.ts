@@ -1,3 +1,5 @@
+import type { Product } from "@/types/product.types";
+
 export interface SizeOption {
     label: string;
     price: number;
@@ -93,20 +95,6 @@ export const TOPPING_GROUPS: ToppingGroup[] = [
     },
 ];
 
-export const PIZZAS: PizzaItem[] = [
-    { title: "Hawaiian", description: "Ham, pineapple", sizes: [{ label: "15in", price: 3690 }, { label: "12in", price: 3090 }, { label: "9in", price: 2450 }], toppings: ["Ham", "Pineapple"] },
-    { title: "Neapolitan", description: "Pepperoni, mushrooms, ground beef", badge: "20% OFF", sizes: [{ label: "15in", price: 4050, originalPrice: 980 }, { label: "12in", price: 3350, originalPrice: 980 }, { label: "9in", price: 2650, originalPrice: 980 }], toppings: ["Pepperoni", "Mushrooms"] },
-    { title: "Pacific", description: "Shrimp, Onion, Chili Flakes, Garlic, Pineapple, Oregano", sizes: [{ label: "15in", price: 4690 }, { label: "12in", price: 3750 }, { label: "9in", price: 3050 }], toppings: ["Shrimp", "Onion", "Chili Flakes", "Garlic", "Pineapple", "Oregano"] },
-    { title: "The Fresh Veggie", description: "Tomato, Basil, Parsley, Feta, Olive", sizes: [{ label: "15in", price: 3900 }, { label: "12in", price: 3200 }, { label: "9in", price: 2500 }], toppings: ["Tomatoes", "Basil"] },
-    { title: "Mexican", description: "Cream Cheese, Chicken, Onion, Corn, Garlic Salt, Garlic Papers", sizes: [{ label: "15in", price: 4790 }, { label: "12in", price: 3850 }, { label: "9in", price: 3180 }], toppings: ["Cream Cheese", "Chicken", "Onion", "Corn", "Garlic Salt", "Garlic Papers"] },
-    { title: "Classic", description: "Pepperoni, Ham, Mushrooms, Onion", sizes: [{ label: "15in", price: 4690 }, { label: "12in", price: 3750 }, { label: "9in", price: 3050 }], toppings: ["Pepperoni", "Ham", "Mushrooms", "Onion"] },
-    { title: "The Rosa", description: "Pepperoni, Parma, Basil, Sundried tomato", sizes: [{ label: "15in", price: 4100 }, { label: "12in", price: 3400 }, { label: "9in", price: 2700 }], toppings: ["Pepperoni", "Parma Ham", "Basil", "Sun - Dried Tomatos"] },
-    { title: "Cheese Pizza", description: "Camembert, Parmesan, Cream Cheese, Blue Cheese", sizes: [{ label: "15in", price: 4790 }, { label: "12in", price: 3850 }, { label: "9in", price: 3180 }], toppings: ["Camembert", "Parmesan", "Cream Cheese", "Blue Cheese"] },
-    { title: "Florence", description: "Pepperoni, Onion, Tomatoes, Basil, Cream Cheese, Dates", sizes: [{ label: "15in", price: 4950 }, { label: "12in", price: 3950 }, { label: "9in", price: 3290 }], toppings: ["Pepperoni", "Onion", "Tomatoes", "Basil", "Cream Cheese", "Dates"] },
-    { title: "The Rose", description: "Ham, Cheese, Bacon, Pineapple, Sauce", sizes: [{ label: "15in", price: 4690 }, { label: "12in", price: 3750 }, { label: "9in", price: 3050 }], toppings: ["Ham", "Cheese", "Bacon", "Pineapple", "Sauce"] },
-    { title: "Kebab pizza with chicken", description: "Chicken, Onion, Garlic Sauce", sizes: [{ label: "15in", price: 4950 }, { label: "12in", price: 3950 }, { label: "9in", price: 3290 }], toppings: ["Chicken", "Onion", "Garlic Sauce"] },
-];
-
 // Base starting point for the "Make Your Own Pizza" quick-action — admin-configurable in the future.
 export const MAKE_YOUR_OWN_PIZZA: PizzaItem = {
     title: "Make Your Own Pizza",
@@ -114,3 +102,24 @@ export const MAKE_YOUR_OWN_PIZZA: PizzaItem = {
     sizes: [{ label: "15in", price: 5990 }, { label: "12in", price: 4850 }, { label: "9in", price: 3990 }],
     toppings: ["Cheese", "Sauce"],
 };
+
+// Maps a real API product (single or variant priced) into the shape the menu UI already
+// knows how to render. Toppings are matched by name against TOPPING_GROUPS as a stand-in
+// until the real topping-categories/items API is wired in.
+export function productToPizzaItem(product: Product): PizzaItem {
+    const sizes: SizeOption[] =
+        product.type === "variant" && product.variants.length > 0
+            ? product.variants.map((v) => ({
+                label: v.variantItemId.name,
+                price: v.price,
+            }))
+            : [{ label: "Regular", price: product.price ?? 0 }];
+
+    return {
+        title: product.name,
+        description: product.description,
+        sizes,
+        image: product.mainImage,
+        toppings: product.defaultToppingItemIds.map((t) => t.name),
+    };
+}
