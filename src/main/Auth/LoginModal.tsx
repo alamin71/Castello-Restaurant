@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { isAxiosError } from "axios";
 import { allCountries } from "country-telephone-data";
+import * as Flags from "country-flag-icons/react/3x2";
 import { ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -22,17 +23,16 @@ import { useVerifyOtp } from "@/hooks/mutations/useVerifyOtp";
 import { useResendOtp } from "@/hooks/mutations/useResendOtp";
 import { toast } from "sonner";
 
-function isoToFlagEmoji(iso2: string) {
-  return iso2
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+function CountryFlag({ iso2, className }: { iso2: string; className?: string }) {
+  const FlagComponent = Flags[iso2.toUpperCase() as keyof typeof Flags];
+  if (!FlagComponent) return <span className={className} />;
+  return <FlagComponent className={className} />;
 }
 
 const COUNTRIES = allCountries
   .map((c) => ({
     iso2: c.iso2,
     code: `+${c.dialCode}`,
-    flag: isoToFlagEmoji(c.iso2),
     name: c.name.replace(/\s*\(.*\)$/, ""),
   }))
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -228,7 +228,7 @@ export default function LoginModal() {
                       type="button"
                       className="flex h-12 w-32 shrink-0 cursor-pointer items-center gap-1.5 border-r border-white/20 bg-transparent px-3 text-sm text-white outline-none"
                     >
-                      <span>{selectedCountry.flag}</span>
+                      <CountryFlag iso2={selectedCountry.iso2} className="h-3.5 w-5 shrink-0 rounded-xs object-cover" />
                       <span>{selectedCountry.code}</span>
                       <ChevronDown className="ml-auto size-4 shrink-0 opacity-60" />
                     </button>
@@ -255,7 +255,7 @@ export default function LoginModal() {
                             }}
                             className="cursor-pointer text-white data-[selected=true]:bg-white/10 data-[selected=true]:text-white"
                           >
-                            <span>{c.flag}</span>
+                            <CountryFlag iso2={c.iso2} className="h-3.5 w-5 shrink-0 rounded-xs object-cover" />
                             <span className="shrink-0">{c.code}</span>
                             <span className="truncate">{c.name}</span>
                           </CommandItem>
@@ -305,8 +305,10 @@ export default function LoginModal() {
             {/* Header */}
             <div className="text-center">
               <h2 className="text-2xl pt-4 font-bold text-white">Verify OTP</h2>
-              <p className="text-sm text-white/50 mt-1">
-                Code sent to {selectedCountry.flag} {selectedCountry.code} {phone}
+              <p className="flex items-center justify-center gap-1.5 text-sm text-white/50 mt-1">
+                Code sent to
+                <CountryFlag iso2={selectedCountry.iso2} className="h-3.5 w-5 shrink-0 rounded-xs object-cover" />
+                {selectedCountry.code} {phone}
               </p>
             </div>
 
