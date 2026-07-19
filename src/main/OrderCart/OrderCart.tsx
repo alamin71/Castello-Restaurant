@@ -22,13 +22,14 @@ export default function OrderCartSheet() {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <button aria-label="Open cart" className="relative cursor-pointer">
-                    <Cart />
-                    {itemCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold text-white">
-                            {itemCount}
-                        </span>
-                    )}
+                <button
+                    aria-label="Open cart"
+                    className="flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-white hover:bg-secondary/90 transition-colors"
+                >
+                    <Cart className="h-5 w-5 shrink-0" />
+                    <span className="whitespace-nowrap">{itemCount} items</span>
+                    <span className="h-4 w-px shrink-0 bg-white/40" />
+                    <span className="whitespace-nowrap">{subtotal.toLocaleString()} kr.</span>
                 </button>
             </SheetTrigger>
 
