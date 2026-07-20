@@ -64,11 +64,9 @@ function HalfCircleIcon({ className }: { className?: string }) {
 }
 
 function QtyButton({
-    qty,
     onInc,
     onDec,
 }: {
-    qty: number;
     onInc: () => void;
     onDec: () => void;
 }) {
@@ -80,10 +78,6 @@ function QtyButton({
             >
                 −
             </button>
-
-            {qty > 0 && (
-                <span className="w-4 text-center text-xs text-white">{qty}</span>
-            )}
 
             <button
                 onClick={onInc}
@@ -119,7 +113,7 @@ function ToppingCard({
                     {topping.price} × {topping.qty || 1}
                 </p>
 
-                <QtyButton qty={topping.qty} onInc={onInc} onDec={onDec} />
+                <QtyButton onInc={onInc} onDec={onDec} />
             </div>
         </div>
     );
@@ -379,71 +373,70 @@ export default function AddCartDialog({
                     ) : (
                         <ScrollArea className="flex-1 min-h-0">
                             <div>
-                                {/* Hero image */}
+                                {/* Hero image + gallery thumbnails share one continuous background */}
                                 <div
-                                    className="relative flex h-64 w-full items-center justify-center bg-cover bg-center sm:h-72"
+                                    className="relative bg-cover bg-center"
                                     style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
                                 >
-                                    {mode === "single" ? (
-                                        half1 && (
-                                            <Image
-                                                src={activeImage}
-                                                alt={half1.pizza.title}
-                                                width={240}
-                                                height={240}
-                                                className="object-contain py-6"
-                                            />
-                                        )
-                                    ) : (
-                                        <div className="relative h-44 w-44">
-                                            <div
-                                                className="absolute inset-0"
-                                                style={{ clipPath: "inset(0 50% 0 0)" }}
-                                            >
-                                                {half1 ? (
-                                                    <Image
-                                                        src={half1.pizza.image ?? FALLBACK_IMAGE}
-                                                        alt={half1.pizza.title}
-                                                        fill
-                                                        className="object-contain"
-                                                    />
-                                                ) : (
-                                                    <div className="h-full w-full rounded-full border-2 border-dashed border-white/20" />
-                                                )}
+                                    <div className="relative flex h-64 w-full items-center justify-center sm:h-72">
+                                        {mode === "single" ? (
+                                            half1 && (
+                                                <Image
+                                                    src={activeImage}
+                                                    alt={half1.pizza.title}
+                                                    width={240}
+                                                    height={240}
+                                                    className="object-contain py-6"
+                                                />
+                                            )
+                                        ) : (
+                                            <div className="relative h-44 w-44">
+                                                <div
+                                                    className="absolute inset-0"
+                                                    style={{ clipPath: "inset(0 50% 0 0)" }}
+                                                >
+                                                    {half1 ? (
+                                                        <Image
+                                                            src={half1.pizza.image ?? FALLBACK_IMAGE}
+                                                            alt={half1.pizza.title}
+                                                            fill
+                                                            className="object-contain"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-full w-full rounded-full border-2 border-dashed border-white/20" />
+                                                    )}
+                                                </div>
+                                                <div
+                                                    className="absolute inset-0"
+                                                    style={{ clipPath: "inset(0 0 0 50%)" }}
+                                                >
+                                                    {half2 ? (
+                                                        <Image
+                                                            src={half2.pizza.image ?? FALLBACK_IMAGE}
+                                                            alt={half2.pizza.title}
+                                                            fill
+                                                            className="object-contain"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-full w-full rounded-full border-2 border-dashed border-white/20" />
+                                                    )}
+                                                </div>
+                                                <div className="absolute inset-y-2 left-1/2 w-px -translate-x-1/2 bg-white/20" />
                                             </div>
-                                            <div
-                                                className="absolute inset-0"
-                                                style={{ clipPath: "inset(0 0 0 50%)" }}
-                                            >
-                                                {half2 ? (
-                                                    <Image
-                                                        src={half2.pizza.image ?? FALLBACK_IMAGE}
-                                                        alt={half2.pizza.title}
-                                                        fill
-                                                        className="object-contain"
-                                                    />
-                                                ) : (
-                                                    <div className="h-full w-full rounded-full border-2 border-dashed border-white/20" />
-                                                )}
-                                            </div>
-                                            <div className="absolute inset-y-2 left-1/2 w-px -translate-x-1/2 bg-white/20" />
-                                        </div>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
 
-                                {/* Gallery thumbnails — only when the product actually has extra gallery images */}
-                                {mode === "single" && galleryImages.length > 1 && (
-                                    <>
-                                        <div className="flex justify-center gap-2 overflow-x-auto px-4 py-2 sm:gap-3 sm:px-6">
+                                    {/* Gallery thumbnails — only when the product actually has extra gallery images */}
+                                    {mode === "single" && galleryImages.length > 1 && (
+                                        <div className="flex justify-center gap-2 overflow-x-auto px-4 pb-4 sm:gap-3 sm:px-6">
                                             {galleryImages.map((src, i) => (
                                                 <button
                                                     key={src + i}
                                                     onClick={() => setSelectedImageIndex(i)}
-                                                    className={`relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 bg-cover bg-center transition-all sm:h-14 sm:w-14 ${selectedImageIndex === i
+                                                    className={`relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 transition-all sm:h-14 sm:w-14 ${selectedImageIndex === i
                                                         ? "scale-105 border-secondary"
-                                                        : "border-zinc-700 hover:border-zinc-500"
+                                                        : "border-white/20 hover:border-white/40"
                                                         }`}
-                                                    style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
                                                 >
                                                     <Image
                                                         src={src}
@@ -454,9 +447,9 @@ export default function AddCartDialog({
                                                 </button>
                                             ))}
                                         </div>
-                                        <Separator />
-                                    </>
-                                )}
+                                    )}
+                                </div>
+                                {mode === "single" && galleryImages.length > 1 && <Separator />}
 
                                 {/* Half & Half toggle */}
                                 {pizza && allowHalfHalf && (
