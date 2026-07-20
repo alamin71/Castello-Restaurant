@@ -21,14 +21,6 @@ import { Separator } from "@/components/ui/separator";
 import { TOPPING_GROUPS, productToMenuItem, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const CRUSTS = [
-    { label: "Classic" },
-    { label: "Thin" },
-    { label: "Thick" },
-    { label: "Stuffed" },
-    { label: "Gluten-Free" },
-];
-
 const FALLBACK_IMAGE = "/assets/pizza.png";
 
 const formatSizeLabel = (label: string) => label.replace(/in$/i, "″");
@@ -202,7 +194,7 @@ export default function AddCartDialog({
     const [open, setOpen] = useState(false);
 
     const [selectedSize, setSelectedSize] = useState(0);
-    const [selectedCrust, setSelectedCrust] = useState(0);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [cartQty, setCartQty] = useState(1);
 
     const [mode, setMode] = useState<"single" | "half">(pizza ? "single" : "half");
@@ -219,6 +211,7 @@ export default function AddCartDialog({
             setHalf2(null);
             setPickerFor(null);
             setSelectedSize(0);
+            setSelectedImageIndex(0);
             setCartQty(1);
         }
         setOpen(next);
@@ -289,6 +282,11 @@ export default function AddCartDialog({
     const canAddToCart = !pickerFor && (mode === "single" || (!!half1 && !!half2));
 
     const titlePizza = mode === "half" ? null : half1?.pizza ?? null;
+
+    const galleryImages: string[] = half1
+        ? [half1.pizza.image, ...(half1.pizza.gallery ?? [])].filter((src): src is string => !!src)
+        : [];
+    const activeImage = galleryImages[selectedImageIndex] ?? galleryImages[0] ?? FALLBACK_IMAGE;
 
     const handleAddToCart = () => {
         if (!canAddToCart) return;
@@ -383,16 +381,16 @@ export default function AddCartDialog({
                             <div>
                                 {/* Hero image */}
                                 <div
-                                    className="relative flex h-56 w-full items-center justify-center bg-cover bg-center"
+                                    className="relative flex h-64 w-full items-center justify-center bg-cover bg-center sm:h-72"
                                     style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
                                 >
                                     {mode === "single" ? (
                                         half1 && (
                                             <Image
-                                                src={half1.pizza.image ?? FALLBACK_IMAGE}
+                                                src={activeImage}
                                                 alt={half1.pizza.title}
-                                                width={180}
-                                                height={180}
+                                                width={240}
+                                                height={240}
                                                 className="object-contain py-6"
                                             />
                                         )
@@ -433,24 +431,25 @@ export default function AddCartDialog({
                                     )}
                                 </div>
 
-                                {/* Crust thumbnails — only relevant outside half & half mode */}
-                                {mode === "single" && (
+                                {/* Gallery thumbnails — only when the product actually has extra gallery images */}
+                                {mode === "single" && galleryImages.length > 1 && (
                                     <>
                                         <div className="flex justify-center gap-2 overflow-x-auto px-4 py-2 sm:gap-3 sm:px-6">
-                                            {CRUSTS.map((c, i) => (
+                                            {galleryImages.map((src, i) => (
                                                 <button
-                                                    key={c.label}
-                                                    onClick={() => setSelectedCrust(i)}
-                                                    className={`relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border-2 transition-all sm:h-14 sm:w-14 ${selectedCrust === i
+                                                    key={src + i}
+                                                    onClick={() => setSelectedImageIndex(i)}
+                                                    className={`relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 bg-cover bg-center transition-all sm:h-14 sm:w-14 ${selectedImageIndex === i
                                                         ? "scale-105 border-secondary"
                                                         : "border-zinc-700 hover:border-zinc-500"
                                                         }`}
+                                                    style={{ backgroundImage: `url(/assets/FoodCardBg.png)` }}
                                                 >
                                                     <Image
-                                                        src={FALLBACK_IMAGE}
-                                                        alt={c.label}
+                                                        src={src}
+                                                        alt={`${titlePizza?.title ?? "Pizza"} ${i + 1}`}
                                                         fill
-                                                        className="object-contain p-2"
+                                                        className="object-contain p-1.5"
                                                     />
                                                 </button>
                                             ))}

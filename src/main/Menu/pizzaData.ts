@@ -12,6 +12,7 @@ export interface PizzaItem {
     badge?: string;
     sizes: SizeOption[];
     image?: string;
+    gallery?: string[];
     toppings?: string[];
 }
 
@@ -120,6 +121,7 @@ export function productToMenuItem(product: Product): PizzaItem {
         description: product.description,
         sizes,
         image: product.mainImage,
+        gallery: product.gallery,
         toppings: product.defaultToppingItemIds.map((t) => t.name),
     };
 }
