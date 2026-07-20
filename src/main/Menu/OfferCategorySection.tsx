@@ -12,9 +12,12 @@ export default function OfferCategorySection({
     offerCategoryId: string;
     categoryName: string;
 }) {
-    const { data: offers, isLoading } = useOffers({ offerCategoryId });
+    const { data: offers, isLoading } = useOffers();
+    const items = (offers ?? []).filter(
+        (o) => o.offerCategoryId.offerCategoryId === offerCategoryId
+    );
 
-    if (!isLoading && (offers ?? []).length === 0) return null;
+    if (!isLoading && items.length === 0) return null;
 
     return (
         <Container className="py-12">
@@ -22,7 +25,7 @@ export default function OfferCategorySection({
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {isLoading
                     ? Array.from({ length: 4 }).map((_, i) => <FoodCardSkeleton key={i} />)
-                    : (offers ?? []).map((offer) => (
+                    : items.map((offer) => (
                         <FoodCard
                             key={offer._id}
                             title={offer.title}
