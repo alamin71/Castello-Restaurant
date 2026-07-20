@@ -6,15 +6,13 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCategories } from "@/hooks/queries/useCategories";
 import { useOfferCategories } from "@/hooks/queries/useOfferCategories";
-import OfferIcon from "../../../public/icons/offer-icon";
-import SpecialOffer from "../Home/SpecialOffer";
 import Pizzas from "./Pizza";
 import CategoryProducts from "./CategoryProducts";
+import OfferCategorySection from "./OfferCategorySection";
 
 interface NavTab {
     id: string;
     label: string;
-    icon?: React.ComponentType;
     image?: string;
 }
 
@@ -28,35 +26,41 @@ const AllMenu = () => {
     const { data: categories, isLoading: categoriesLoading } = useCategories();
     const { data: offerCategories } = useOfferCategories();
 
-    const tabs: NavTab[] = useMemo(() => {
-        // Prefer the offer category that actually has offers assigned to it.
-        const featuredOfferCategory =
-            (offerCategories ?? []).find((oc) => oc.assignedOffers > 0) ?? offerCategories?.[0];
+    // Only offer categories that actually have offers assigned to them get a tab.
+    const featuredOfferCategories = useMemo(
+        () =>
+            (offerCategories ?? [])
+                .filter((oc) => oc.assignedOffers > 0)
+                .sort((a, b) => a.sortOrder - b.sortOrder),
+        [offerCategories]
+    );
 
-        const offersTab: NavTab = featuredOfferCategory
-            ? { id: "offers", label: "Offers", image: featuredOfferCategory.image }
-            : { id: "offers", label: "Offers", icon: OfferIcon };
-
-        return [
-            offersTab,
-            ...[...(categories ?? [])]
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((c) => ({
-                    id: c.name.toLowerCase() === "pizza" ? "pizza" : c.categoryId,
-                    label: c.name,
-                    image: c.image,
-                })),
-        ];
-    }, [categories, offerCategories]);
+    const tabs: NavTab[] = useMemo(() => [
+        ...featuredOfferCategories.map((oc) => ({
+            id: oc.offerCategoryId,
+            label: oc.name,
+            image: oc.image,
+        })),
+        ...[...(categories ?? [])]
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((c) => ({
+                id: c.name.toLowerCase() === "pizza" ? "pizza" : c.categoryId,
+                label: c.name,
+                image: c.image,
+            })),
+    ], [categories, featuredOfferCategories]);
 
     const otherCategories = useMemo(
         () => (categories ?? []).filter((c) => c.name.toLowerCase() !== "pizza"),
         [categories]
     );
 
-    const [active, setActive] = useState("offers");
+    const [active, setActive] = useState("");
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
     const scrollingRef = useRef(false);
+
+    // Default to the first tab until the user clicks/scrolls, without syncing via an effect.
+    const activeTab = active || tabs[0]?.id || "";
 
     // Scroll spy via IntersectionObserver
     useEffect(() => {
@@ -108,8 +112,7 @@ const AllMenu = () => {
                                 </div>
                             ))
                             : tabs.map((tab) => {
-                                const isActive = active === tab.id;
-                                const Icon = tab.icon;
+                                const isActive = activeTab === tab.id;
 
                                 return (
                                     <button
@@ -124,9 +127,7 @@ const AllMenu = () => {
                                         )}
                                     >
                                         <span className={cn("relative flex h-9 w-9 items-center justify-center transition-transform duration-200", isActive ? "scale-110" : "group-hover:scale-105")}>
-                                            {Icon ? (
-                                                <Icon />
-                                            ) : tab.image ? (
+                                            {tab.image && (
                                                 <Image
                                                     src={tab.image}
                                                     alt={tab.label}
@@ -134,7 +135,7 @@ const AllMenu = () => {
                                                     className="object-contain"
                                                     style={isActive ? { filter: ACTIVE_ICON_FILTER } : undefined}
                                                 />
-                                            ) : null}
+                                            )}
                                         </span>
                                         <span className={cn(
                                             "font-sans text-base font-semibold tracking-wide whitespace-nowrap leading-none",
@@ -151,9 +152,15 @@ const AllMenu = () => {
             </div>
 
             {/* Sections */}
-            <div ref={(el) => { sectionRefs.current["offers"] = el; }} style={{ scrollMarginTop: "210px" }}>
-                <SpecialOffer />
-            </div>
+            {featuredOfferCategories.map((oc) => (
+                <div
+                    key={oc.offerCategoryId}
+                    ref={(el) => { sectionRefs.current[oc.offerCategoryId] = el; }}
+                    style={{ scrollMarginTop: "210px" }}
+                >
+                    <OfferCategorySection offerCategoryId={oc.offerCategoryId} categoryName={oc.name} />
+                </div>
+            ))}
             <div ref={(el) => { sectionRefs.current["pizza"] = el; }} style={{ scrollMarginTop: "210px" }}>
                 <Pizzas />
             </div>
