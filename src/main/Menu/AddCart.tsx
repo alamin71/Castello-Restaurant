@@ -428,7 +428,7 @@ export default function AddCartDialog({
 
                                     {/* Gallery thumbnails — only when the product actually has extra gallery images */}
                                     {mode === "single" && galleryImages.length > 1 && (
-                                        <div className="flex justify-center gap-2 overflow-x-auto px-4 pb-4 sm:gap-3 sm:px-6">
+                                        <div className="flex justify-center gap-2 overflow-x-auto px-4 pt-3 pb-4 sm:gap-3 sm:px-6">
                                             {galleryImages.map((src, i) => (
                                                 <button
                                                     key={src + i}
@@ -442,7 +442,7 @@ export default function AddCartDialog({
                                                         src={src}
                                                         alt={`${titlePizza?.title ?? "Pizza"} ${i + 1}`}
                                                         fill
-                                                        className="object-contain p-2"
+                                                        className="object-contain p-1"
                                                     />
                                                 </button>
                                             ))}
