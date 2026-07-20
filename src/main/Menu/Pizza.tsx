@@ -69,6 +69,7 @@ const Pizzas = () => {
                             toppings={pizza.toppings}
                             allowHalfHalf
                             image={pizza.image ?? "/assets/pizza.png"}
+                            gallery={pizza.gallery}
                         />
                     ))}
             </div>

@@ -10,6 +10,7 @@ export interface FoodCardProps {
   price?: string | number;
   sizes?: SizeOption[];
   image: string;
+  gallery?: string[];
   badge?: string;
   toppings?: string[];
   allowHalfHalf?: boolean;
@@ -22,6 +23,7 @@ const FoodCard: React.FC<FoodCardProps> = ({
   price,
   sizes,
   image,
+  gallery,
   badge,
   toppings,
   allowHalfHalf,
@@ -32,6 +34,7 @@ const FoodCard: React.FC<FoodCardProps> = ({
     badge,
     sizes: sizes && sizes.length > 0 ? sizes : [{ label: "Regular", price: Number(price) || 0 }],
     image,
+    gallery,
     toppings,
   };
 

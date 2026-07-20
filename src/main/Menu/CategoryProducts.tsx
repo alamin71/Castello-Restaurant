@@ -29,6 +29,7 @@ export default function CategoryProducts({ categoryName }: { categoryName: strin
                             sizes={item.sizes}
                             toppings={item.toppings}
                             image={item.image ?? "/assets/pizza.png"}
+                            gallery={item.gallery}
                         />
                     ))}
             </div>

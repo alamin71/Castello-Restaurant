@@ -23,6 +23,7 @@ const SpecialOffer = () => {
               description={offer.description}
               price={offer.price}
               image={offer.mainImage}
+              gallery={offer.gallery}
             />
           ))}
       </div>
