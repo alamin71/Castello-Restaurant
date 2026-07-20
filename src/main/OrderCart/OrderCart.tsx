@@ -22,15 +22,21 @@ export default function OrderCartSheet() {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <button
-                    aria-label="Open cart"
-                    className="flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-white hover:bg-secondary/90 transition-colors"
-                >
-                    <Cart className="h-5 w-5 shrink-0" />
-                    <span className="whitespace-nowrap">{itemCount} items</span>
-                    <span className="h-4 w-px shrink-0 bg-white/40" />
-                    <span className="whitespace-nowrap">{subtotal.toLocaleString()} kr.</span>
-                </button>
+                {itemCount > 0 ? (
+                    <button
+                        aria-label="Open cart"
+                        className="flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-3 py-2 text-sm font-semibold text-white hover:bg-secondary/90 transition-colors"
+                    >
+                        <Cart className="h-5 w-5 shrink-0" />
+                        <span className="whitespace-nowrap">{itemCount} items</span>
+                        <span className="h-4 w-px shrink-0 bg-white/40" />
+                        <span className="whitespace-nowrap">{subtotal.toLocaleString()} kr.</span>
+                    </button>
+                ) : (
+                    <button aria-label="Open cart" className="cursor-pointer">
+                        <Cart className="h-6 w-6 text-white" />
+                    </button>
+                )}
             </SheetTrigger>
 
             <SheetContent
