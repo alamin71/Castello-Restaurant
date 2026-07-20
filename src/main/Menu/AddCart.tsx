@@ -442,7 +442,7 @@ export default function AddCartDialog({
                                                         src={src}
                                                         alt={`${titlePizza?.title ?? "Pizza"} ${i + 1}`}
                                                         fill
-                                                        className="object-contain p-1.5"
+                                                        className="object-contain p-2"
                                                     />
                                                 </button>
                                             ))}
