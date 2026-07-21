@@ -96,13 +96,13 @@ function ToppingCard({
 
     return (
         <div
-            className={`relative overflow-hidden rounded-lg border-2 p-2 transition-colors ${active
+            className={`relative rounded-lg border-2 p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
         >
             {isAddedActive && (
-                <span className="absolute top-1 right-1 rounded-full bg-secondary px-1.5 py-0.5 text-[8px] font-bold text-white leading-none">
+                <span className="absolute -top-2 -right-2 rounded-full bg-secondary px-2 py-1 text-[10px] font-bold text-white leading-none">
                     New
                 </span>
             )}
