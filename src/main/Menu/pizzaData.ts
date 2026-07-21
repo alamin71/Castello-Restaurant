@@ -20,6 +20,8 @@ export interface Topping {
     name: string;
     price: number;
     qty: number;
+    // Whether this topping came pre-selected with the product (vs added by the customer).
+    isDefault?: boolean;
 }
 
 export interface ToppingGroup {

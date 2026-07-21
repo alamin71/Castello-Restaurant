@@ -32,6 +32,7 @@ function buildGroups(preset?: string[]): ToppingGroup[] {
         items: group.items.map((item) => ({
             ...item,
             qty: selected.has(item.name) ? 1 : 0,
+            isDefault: selected.has(item.name),
         })),
     }));
 }
@@ -63,57 +64,64 @@ function HalfCircleIcon({ className }: { className?: string }) {
     );
 }
 
-function QtyButton({
-    onInc,
-    onDec,
-}: {
-    onInc: () => void;
-    onDec: () => void;
-}) {
-    return (
-        <div className="mt-1 flex items-center gap-1">
-            <button
-                onClick={onDec}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-zinc-600"
-            >
-                −
-            </button>
-
-            <button
-                onClick={onInc}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-secondary"
-            >
-                +
-            </button>
-        </div>
-    );
-}
-
 function ToppingCard({
     topping,
     onInc,
     onDec,
+    onRemove,
 }: {
     topping: Topping;
     onInc: () => void;
     onDec: () => void;
+    onRemove: () => void;
 }) {
     const active = topping.qty > 0;
+    const isDefaultActive = !!topping.isDefault && active;
+    const isAddedActive = !topping.isDefault && active;
 
     return (
         <div
-            className={`rounded-2xl border p-2 transition-colors ${active
+            className={`relative rounded-2xl border p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
         >
+            {isAddedActive && (
+                <span className="absolute -top-1.5 -right-1.5 rounded-full bg-secondary px-1.5 py-0.5 text-[8px] font-bold text-white">
+                    New
+                </span>
+            )}
             <p className="text-sm leading-tight ">{topping.name}</p>
-            <div className="flex justify-between items-center">
+            <div className="mt-1 flex justify-between items-center">
                 <p className="text-xs text-white">
-                    {topping.price} × {topping.qty || 1}
+                    {topping.price} kr.{topping.qty > 1 ? ` × ${topping.qty}` : ""}
                 </p>
 
-                <QtyButton onInc={onInc} onDec={onDec} />
+                <div className="flex items-center gap-1">
+                    {isDefaultActive && (
+                        <button
+                            onClick={onRemove}
+                            aria-label={`Remove ${topping.name}`}
+                            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors hover:bg-red-600"
+                        >
+                            ×
+                        </button>
+                    )}
+                    {isAddedActive && (
+                        <button
+                            onClick={onDec}
+                            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-zinc-600"
+                        >
+                            −
+                        </button>
+                    )}
+                    <button
+                        onClick={onInc}
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-secondary"
+                    >
+                        +
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -246,6 +254,25 @@ export default function AddCartDialog({
                         items: g.items.map((t, j) =>
                             j !== ti ? t : { ...t, qty: Math.max(0, t.qty + delta) }
                         ),
+                    }
+            );
+
+        if (target === "first") {
+            setHalf1((prev) => (prev ? { ...prev, groups: updater(prev.groups) } : prev));
+        } else {
+            setHalf2((prev) => (prev ? { ...prev, groups: updater(prev.groups) } : prev));
+        }
+    };
+
+    // Fully excludes a default topping (as opposed to decrementing its quantity).
+    const removeTopping = (target: HalfSlot, gi: number, ti: number) => {
+        const updater = (groups: ToppingGroup[]) =>
+            groups.map((g, i) =>
+                i !== gi
+                    ? g
+                    : {
+                        ...g,
+                        items: g.items.map((t, j) => (j !== ti ? t : { ...t, qty: 0 })),
                     }
             );
 
@@ -559,28 +586,45 @@ export default function AddCartDialog({
                                             <p className="text-xs text-zinc-500">You can customize toppings</p>
                                         </div>
                                         <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
-                                            {activeState.groups.map((group, gi) => (
-                                                <div key={group.label}>
-                                                    <div className="mb-2 flex items-baseline justify-between">
-                                                        <span className="text-sm font-semibold text-white">
-                                                            {group.label}
-                                                        </span>
-                                                        <span className="text-[10px] text-zinc-500">
-                                                            {group.surcharge}
-                                                        </span>
+                                            {activeState.groups.map((group, gi) => {
+                                                const addedItems = group.items.filter(
+                                                    (t) => !t.isDefault && t.qty > 0
+                                                );
+                                                const addedPrice = addedItems.reduce(
+                                                    (sum, t) => sum + t.price * t.qty,
+                                                    0
+                                                );
+
+                                                return (
+                                                    <div key={group.label}>
+                                                        <div className="mb-2 flex items-baseline justify-between">
+                                                            <span className="text-sm font-semibold text-white">
+                                                                {group.label}
+                                                            </span>
+                                                            {addedItems.length > 0 ? (
+                                                                <span className="text-[10px] text-secondary">
+                                                                    +{addedItems.length} topping{addedItems.length > 1 ? "s" : ""} · +{addedPrice.toLocaleString()} kr.
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-[10px] text-zinc-500">
+                                                                    {group.surcharge}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
+                                                            {group.items.map((topping, ti) => (
+                                                                <ToppingCard
+                                                                    key={topping.name}
+                                                                    topping={topping}
+                                                                    onInc={() => updateQty(editTarget, gi, ti, 1)}
+                                                                    onDec={() => updateQty(editTarget, gi, ti, -1)}
+                                                                    onRemove={() => removeTopping(editTarget, gi, ti)}
+                                                                />
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
-                                                        {group.items.map((topping, ti) => (
-                                                            <ToppingCard
-                                                                key={topping.name}
-                                                                topping={topping}
-                                                                onInc={() => updateQty(editTarget, gi, ti, 1)}
-                                                                onDec={() => updateQty(editTarget, gi, ti, -1)}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </>
                                 )}
