@@ -102,7 +102,7 @@ function ToppingCard({
                 }`}
         >
             {isAddedActive && (
-                <span className="absolute top-0 right-0 rounded-tr-lg rounded-bl-md bg-secondary px-2 py-0.5 text-[8px] font-bold text-white">
+                <span className="absolute top-0 right-0 rounded-tr-lg rounded-bl-lg bg-secondary px-2 py-0.5 text-[8px] font-bold text-white">
                     New
                 </span>
             )}
@@ -304,6 +304,16 @@ export default function AddCartDialog({
             setHalf1((prev) => (prev ? { ...prev, groups: updater(prev.groups) } : prev));
         } else {
             setHalf2((prev) => (prev ? { ...prev, groups: updater(prev.groups) } : prev));
+        }
+    };
+
+    // Reverts every group back to the pizza's original preset — defaults re-selected, all
+    // customer-added toppings dropped.
+    const resetToppings = (target: HalfSlot) => {
+        if (target === "first") {
+            setHalf1((prev) => (prev ? { ...prev, groups: buildGroups(prev.pizza.toppings) } : prev));
+        } else {
+            setHalf2((prev) => (prev ? { ...prev, groups: buildGroups(prev.pizza.toppings) } : prev));
         }
     };
 
@@ -605,9 +615,17 @@ export default function AddCartDialog({
                                         <Separator />
 
                                         {/* Topping groups for the currently active half */}
-                                        <div className="px-4 pt-3 sm:px-6">
-                                            <h3 className="text-sm font-semibold text-white">Toppings</h3>
-                                            <p className="text-xs text-zinc-500">You can customize toppings</p>
+                                        <div className="flex items-start justify-between px-4 pt-3 sm:px-6">
+                                            <div>
+                                                <h3 className="text-sm font-semibold text-white">Toppings</h3>
+                                                <p className="text-xs text-zinc-500">You can customize toppings</p>
+                                            </div>
+                                            <button
+                                                onClick={() => resetToppings(editTarget)}
+                                                className="cursor-pointer text-xs font-semibold text-secondary hover:underline"
+                                            >
+                                                Reset Toppings
+                                            </button>
                                         </div>
                                         <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
                                             {activeState.groups.map((group, gi) => {
@@ -626,7 +644,7 @@ export default function AddCartDialog({
                                                 return (
                                                     <div
                                                         key={group.label}
-                                                        className="rounded-2xl border border-white/10 p-3 sm:p-4"
+                                                        className="rounded-2xl border-2 border-white/10 p-3 sm:p-4"
                                                     >
                                                         <div className="mb-3 flex items-baseline justify-between">
                                                             <span className="text-sm font-semibold text-white">
