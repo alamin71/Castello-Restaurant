@@ -96,7 +96,7 @@ function ToppingCard({
 
     return (
         <div
-            className={`relative overflow-hidden rounded-lg border-2 p-2 transition-colors ${active
+            className={`relative overflow-hidden rounded-lg border p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
