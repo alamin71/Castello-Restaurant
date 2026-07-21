@@ -44,9 +44,17 @@ function buildGroups(preset?: ToppingPreset[]): ToppingGroup[] {
     }));
 }
 
+// Default toppings are already baked into the product's base price — removing one is
+// free (no refund), but asking for extra beyond the default qty of 1 charges for the
+// extra units. Non-default (added) toppings always charge their full price per quantity.
 const toppingsTotal = (groups: ToppingGroup[]) =>
     groups.reduce(
-        (sum, g) => sum + g.items.reduce((s, t) => s + t.price * t.qty, 0),
+        (sum, g) =>
+            sum +
+            g.items.reduce(
+                (s, t) => s + t.price * (t.isDefault ? Math.max(0, t.qty - 1) : t.qty),
+                0
+            ),
         0
     );
 
@@ -88,13 +96,13 @@ function ToppingCard({
 
     return (
         <div
-            className={`relative overflow-hidden rounded-2xl border-2 p-2 transition-colors ${active
+            className={`relative overflow-hidden rounded-lg border-2 p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
         >
             {isAddedActive && (
-                <span className="absolute top-0 right-0 rounded-tr-2xl rounded-bl-lg bg-secondary px-2 py-0.5 text-[8px] font-bold text-white">
+                <span className="absolute top-0 right-0 rounded-tr-lg rounded-bl-md bg-secondary px-2 py-0.5 text-[8px] font-bold text-white">
                     New
                 </span>
             )}
