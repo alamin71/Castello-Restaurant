@@ -106,13 +106,22 @@ function ToppingCard({
 
                 <div className="flex items-center gap-1">
                     {isDefaultActive && (
-                        <button
-                            onClick={onRemove}
-                            aria-label={`Remove ${topping.name}`}
-                            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors hover:bg-red-600"
-                        >
-                            ×
-                        </button>
+                        <>
+                            <button
+                                onClick={onRemove}
+                                aria-label={`Remove ${topping.name}`}
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-red-500 text-base font-bold text-red-500 transition-colors hover:bg-red-500/10"
+                            >
+                                ×
+                            </button>
+                            <button
+                                onClick={onDec}
+                                disabled={topping.qty <= 1}
+                                className="flex h-8 w-8 items-center justify-center rounded text-lg text-white transition-colors enabled:cursor-pointer enabled:hover:bg-zinc-600 disabled:opacity-30"
+                            >
+                                −
+                            </button>
+                        </>
                     )}
                     {isAddedActive && (
                         <button
