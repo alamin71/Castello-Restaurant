@@ -88,7 +88,7 @@ function ToppingCard({
 
     return (
         <div
-            className={`relative overflow-hidden rounded-2xl border p-2 transition-colors ${active
+            className={`relative overflow-hidden rounded-2xl border-2 p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
@@ -616,8 +616,11 @@ export default function AddCartDialog({
                                                 );
 
                                                 return (
-                                                    <div key={group.label}>
-                                                        <div className="mb-2 flex items-baseline justify-between">
+                                                    <div
+                                                        key={group.label}
+                                                        className="rounded-2xl border border-white/10 p-3 sm:p-4"
+                                                    >
+                                                        <div className="mb-3 flex items-baseline justify-between">
                                                             <span className="text-sm font-semibold text-white">
                                                                 {group.label}
                                                             </span>
