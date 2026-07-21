@@ -6,6 +6,13 @@ export interface SizeOption {
     originalPrice?: number;
 }
 
+// A preset topping selection — price is optional so callers can defer to the shared
+// catalog's price when they don't have a real backend price for that item.
+export interface ToppingPreset {
+    name: string;
+    price?: number;
+}
+
 export interface PizzaItem {
     title: string;
     description: string;
@@ -13,7 +20,7 @@ export interface PizzaItem {
     sizes: SizeOption[];
     image?: string;
     gallery?: string[];
-    toppings?: string[];
+    toppings?: ToppingPreset[];
 }
 
 export interface Topping {
@@ -103,7 +110,7 @@ export const MAKE_YOUR_OWN_PIZZA: PizzaItem = {
     title: "Make Your Own Pizza",
     description: "Here you can choose from all the toppings we offer and make your own pizza.",
     sizes: [{ label: "15in", price: 5990 }, { label: "12in", price: 4850 }, { label: "9in", price: 3990 }],
-    toppings: ["Cheese", "Sauce"],
+    toppings: [{ name: "Cheese" }, { name: "Sauce" }],
 };
 
 // Maps a real API product (single or variant priced) into the shape the menu UI already
@@ -124,6 +131,6 @@ export function productToMenuItem(product: Product): PizzaItem {
         sizes,
         image: product.mainImage,
         gallery: product.gallery,
-        toppings: product.defaultToppingItemIds.map((t) => t.name),
+        toppings: product.defaultToppingItemIds.map((t) => ({ name: t.name, price: t.price })),
     };
 }

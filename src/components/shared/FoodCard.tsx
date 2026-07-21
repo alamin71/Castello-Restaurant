@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import AddCartDialog from "@/main/Menu/AddCart";
-import type { PizzaItem, SizeOption } from "@/main/Menu/pizzaData";
+import type { PizzaItem, SizeOption, ToppingPreset } from "@/main/Menu/pizzaData";
 
 export interface FoodCardProps {
   title: string;
@@ -12,7 +12,7 @@ export interface FoodCardProps {
   image: string;
   gallery?: string[];
   badge?: string;
-  toppings?: string[];
+  toppings?: ToppingPreset[];
   allowHalfHalf?: boolean;
   onAdd?: () => void;
 }

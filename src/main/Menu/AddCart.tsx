@@ -18,22 +18,29 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { TOPPING_GROUPS, productToMenuItem, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
+import { TOPPING_GROUPS, productToMenuItem, type PizzaItem, type Topping, type ToppingGroup, type ToppingPreset } from "./pizzaData";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const FALLBACK_IMAGE = "/assets/pizza.png";
 
 const formatSizeLabel = (label: string) => label.replace(/in$/i, "″");
 
-function buildGroups(preset?: string[]): ToppingGroup[] {
-    const selected = new Set(preset ?? []);
+function buildGroups(preset?: ToppingPreset[]): ToppingGroup[] {
+    const presetMap = new Map((preset ?? []).map((p) => [p.name, p.price]));
     return TOPPING_GROUPS.map((group) => ({
         ...group,
-        items: group.items.map((item) => ({
-            ...item,
-            qty: selected.has(item.name) ? 1 : 0,
-            isDefault: selected.has(item.name),
-        })),
+        items: group.items.map((item) => {
+            const isDefault = presetMap.has(item.name);
+            const realPrice = presetMap.get(item.name);
+            return {
+                ...item,
+                qty: isDefault ? 1 : 0,
+                isDefault,
+                // Prefer the real backend price for this product's default toppings;
+                // fall back to the shared catalog's price for everything else.
+                price: isDefault && realPrice != null ? realPrice : item.price,
+            };
+        }),
     }));
 }
 
