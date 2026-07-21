@@ -88,13 +88,13 @@ function ToppingCard({
 
     return (
         <div
-            className={`relative rounded-2xl border p-2 transition-colors ${active
+            className={`relative overflow-hidden rounded-2xl border p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
         >
             {isAddedActive && (
-                <span className="absolute -top-1.5 -right-1.5 rounded-full bg-secondary px-1.5 py-0.5 text-[8px] font-bold text-white">
+                <span className="absolute top-0 right-0 rounded-tr-2xl rounded-bl-lg bg-secondary px-2 py-0.5 text-[8px] font-bold text-white">
                     New
                 </span>
             )}
@@ -606,6 +606,10 @@ export default function AddCartDialog({
                                                 const addedItems = group.items.filter(
                                                     (t) => !t.isDefault && t.qty > 0
                                                 );
+                                                const addedQty = addedItems.reduce(
+                                                    (sum, t) => sum + t.qty,
+                                                    0
+                                                );
                                                 const addedPrice = addedItems.reduce(
                                                     (sum, t) => sum + t.price * t.qty,
                                                     0
@@ -617,13 +621,9 @@ export default function AddCartDialog({
                                                             <span className="text-sm font-semibold text-white">
                                                                 {group.label}
                                                             </span>
-                                                            {addedItems.length > 0 ? (
+                                                            {addedQty > 0 && (
                                                                 <span className="text-[10px] text-secondary">
-                                                                    +{addedItems.length} topping{addedItems.length > 1 ? "s" : ""} · +{addedPrice.toLocaleString()} kr.
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-[10px] text-zinc-500">
-                                                                    {group.surcharge}
+                                                                    +{addedQty} Qty · +{addedPrice.toLocaleString()} kr.
                                                                 </span>
                                                             )}
                                                         </div>
