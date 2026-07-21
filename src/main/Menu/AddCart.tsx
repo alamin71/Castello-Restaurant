@@ -110,7 +110,7 @@ function ToppingCard({
                             <button
                                 onClick={onRemove}
                                 aria-label={`Remove ${topping.name}`}
-                                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-red-500 text-base font-bold text-red-500 transition-colors hover:bg-red-500/10"
+                                className="flex h-8 w-8 cursor-pointer items-center justify-center text-2xl font-bold text-red-500 transition-colors hover:opacity-70"
                             >
                                 ×
                             </button>
