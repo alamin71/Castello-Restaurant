@@ -96,13 +96,13 @@ function ToppingCard({
 
     return (
         <div
-            className={`relative rounded-lg border-2 p-2 transition-colors ${active
+            className={`relative overflow-hidden rounded-lg border-2 p-2 transition-colors ${active
                 ? "border-secondary"
                 : "border-white/20"
                 }`}
         >
             {isAddedActive && (
-                <span className="absolute -top-2 -right-2 rounded-full bg-secondary px-2 py-1 text-[10px] font-bold text-white leading-none">
+                <span className="absolute top-0 right-0 rounded-bl-lg bg-secondary px-2 py-0.5 text-[9px] font-bold text-white leading-tight">
                     New
                 </span>
             )}
@@ -629,15 +629,16 @@ export default function AddCartDialog({
                                         </div>
                                         <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
                                             {activeState.groups.map((group, gi) => {
-                                                const addedItems = group.items.filter(
-                                                    (t) => !t.isDefault && t.qty > 0
-                                                );
-                                                const addedQty = addedItems.reduce(
-                                                    (sum, t) => sum + t.qty,
+                                                // Extra qty on top of a default's preset qty of 1 counts the same as a
+                                                // fully new topping — both are billed on top of the base price.
+                                                const extraQty = (t: Topping) =>
+                                                    t.isDefault ? Math.max(0, t.qty - 1) : t.qty;
+                                                const addedQty = group.items.reduce(
+                                                    (sum, t) => sum + extraQty(t),
                                                     0
                                                 );
-                                                const addedPrice = addedItems.reduce(
-                                                    (sum, t) => sum + t.price * t.qty,
+                                                const addedPrice = group.items.reduce(
+                                                    (sum, t) => sum + t.price * extraQty(t),
                                                     0
                                                 );
 
