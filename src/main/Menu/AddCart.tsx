@@ -102,7 +102,7 @@ function ToppingCard({
                 }`}
         >
             {isAddedActive && (
-                <span className="absolute top-0 right-0 rounded-tr-lg rounded-bl-lg bg-secondary px-2 py-0.5 text-[8px] font-bold text-white">
+                <span className="absolute top-1 right-1 rounded-full bg-secondary px-1.5 py-0.5 text-[8px] font-bold text-white leading-none">
                     New
                 </span>
             )}
