@@ -11,7 +11,7 @@ import { useProducts } from "@/hooks/queries/useProducts";
 const Pizzas = () => {
     const { data: products, isLoading } = useProducts();
     const pizzas = (products ?? [])
-        .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
+        .filter((p) => p.categoryId?.name?.toLowerCase() === "pizza")
         .map(productToMenuItem);
 
     return (

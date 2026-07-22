@@ -215,7 +215,7 @@ export default function AddCartDialog({
     const { addToCart } = useCart();
     const { data: products } = useProducts();
     const pizzaOptions: PizzaItem[] = (products ?? [])
-        .filter((p) => p.categoryId.name.toLowerCase() === "pizza")
+        .filter((p) => p.categoryId?.name?.toLowerCase() === "pizza")
         .map(productToMenuItem);
     const [open, setOpen] = useState(false);
 

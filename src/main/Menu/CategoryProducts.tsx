@@ -9,7 +9,7 @@ import { productToMenuItem } from "./pizzaData";
 export default function CategoryProducts({ categoryName }: { categoryName: string }) {
     const { data: products, isLoading } = useProducts();
     const items = (products ?? [])
-        .filter((p) => p.categoryId.name.toLowerCase() === categoryName.toLowerCase())
+        .filter((p) => p.categoryId?.name?.toLowerCase() === categoryName.toLowerCase())
         .map(productToMenuItem);
 
     if (!isLoading && items.length === 0) return null;

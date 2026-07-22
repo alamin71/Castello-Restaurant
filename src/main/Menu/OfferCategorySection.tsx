@@ -14,7 +14,7 @@ export default function OfferCategorySection({
 }) {
     const { data: offers, isLoading } = useOffers();
     const items = (offers ?? []).filter(
-        (o) => o.offerCategoryId.offerCategoryId === offerCategoryId
+        (o) => o.offerCategoryId?.offerCategoryId === offerCategoryId
     );
 
     if (!isLoading && items.length === 0) return null;
