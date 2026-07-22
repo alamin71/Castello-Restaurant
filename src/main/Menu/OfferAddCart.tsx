@@ -47,31 +47,6 @@ function slotRequiresChoice(item: OfferItemDetail): boolean {
     return item.products.length > 1 || (first?.variantItemIds.length ?? 0) > 1;
 }
 
-// Looks up the real backend price for a specific product + variant combination — the offer
-// response itself carries no price per option, only the product/variant catalog does.
-function realPriceFor(productId: string, variantId: string | undefined, products: Product[]): number {
-    const product = products.find((p) => p._id === productId);
-    if (!product) return 0;
-    if (product.type === "single" || !variantId) return product.price ?? 0;
-    const variant = product.variants.find((v) => v.variantItemId._id === variantId);
-    return variant?.price ?? product.price ?? 0;
-}
-
-// The offer's flat price already covers the slot's first product/first variant (the default
-// selection) — choosing a pricier product or variant charges the real difference on top.
-function slotVariantDelta(
-    item: OfferItemDetail,
-    chosenProduct: OfferItemProductRef,
-    chosenVariant: OfferItemVariantRef | null,
-    products: Product[]
-): number {
-    const defaultOption = item.products[0];
-    if (!defaultOption) return 0;
-    const defaultPrice = realPriceFor(defaultOption.productId._id, defaultOption.variantItemIds[0]?._id, products);
-    const chosenPrice = realPriceFor(chosenProduct._id, chosenVariant?._id, products);
-    return chosenPrice - defaultPrice;
-}
-
 function buildSlotGroups(
     productRef: OfferItemProductRef,
     products: Product[],
@@ -182,12 +157,10 @@ export default function OfferAddCartDialog({
     };
 
     const slotSelections = offer?.offerItems.map(getSlotSelection) ?? [];
+    // Choosing a different product or variant within a slot never changes the price — the
+    // offer's flat price already covers any listed alternative. Only extra/added toppings add on top.
     const toppingsSum = slotSelections.reduce((sum, sel) => sum + (sel ? toppingsTotal(sel.groups) : 0), 0);
-    const variantDeltaSum = (offer?.offerItems ?? []).reduce((sum, item, i) => {
-        const sel = slotSelections[i];
-        return sum + (sel ? slotVariantDelta(item, sel.product, sel.variant, products ?? []) : 0);
-    }, 0);
-    const total = ((offer?.price ?? 0) + toppingsSum + variantDeltaSum) * cartQty;
+    const total = ((offer?.price ?? 0) + toppingsSum) * cartQty;
     const canAddToCart = !!offer && slotSelections.every((sel) => sel !== null);
 
     const openSlot = (index: number) => {
@@ -291,7 +264,7 @@ export default function OfferAddCartDialog({
             description: parts.filter(Boolean).join(", "),
             image: offer.mainImage,
             quantity: cartQty,
-            price: offer.price + toppingsSum + variantDeltaSum,
+            price: offer.price + toppingsSum,
         });
 
         toast.success(`${offer.title} added to cart!`);
@@ -379,18 +352,13 @@ export default function OfferAddCartDialog({
                                             >
                                                 {activeProductOption.variantItemIds.map((v, vi) => {
                                                     const active = draft.variantIndex === vi;
-                                                    const price = realPriceFor(
-                                                        activeProductOption.productId._id,
-                                                        v._id,
-                                                        products ?? []
-                                                    );
                                                     return (
                                                         <Label
                                                             key={v._id}
                                                             htmlFor={`variant-${vi}`}
-                                                            className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-3xl border p-3 text-center transition-all ${active
-                                                                ? "border-secondary bg-white/3"
-                                                                : "border-white/15 hover:border-white/30"
+                                                            className={`flex cursor-pointer items-center justify-center rounded-full border p-3 text-center text-sm font-semibold transition-all ${active
+                                                                ? "border-secondary bg-white/3 text-white"
+                                                                : "border-white/15 text-zinc-300 hover:border-white/30"
                                                                 }`}
                                                         >
                                                             <RadioGroupItem
@@ -398,10 +366,7 @@ export default function OfferAddCartDialog({
                                                                 id={`variant-${vi}`}
                                                                 className="sr-only"
                                                             />
-                                                            <span className="text-base font-bold text-white">
-                                                                {price.toLocaleString()} kr.
-                                                            </span>
-                                                            <span className="text-sm text-zinc-400">{v.name}</span>
+                                                            {v.name}
                                                         </Label>
                                                     );
                                                 })}
