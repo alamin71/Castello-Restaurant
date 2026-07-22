@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import AddCartDialog from "@/main/Menu/AddCart";
-import type { PizzaItem, SizeOption, ToppingPreset } from "@/main/Menu/pizzaData";
+import type { DefaultToppingSelection, PizzaItem, SizeOption } from "@/main/Menu/pizzaData";
 
 export interface FoodCardProps {
   title: string;
@@ -12,7 +12,8 @@ export interface FoodCardProps {
   image: string;
   gallery?: string[];
   badge?: string;
-  toppings?: ToppingPreset[];
+  toppingCategoryIds?: string[];
+  defaultToppings?: DefaultToppingSelection[];
   allowHalfHalf?: boolean;
   onAdd?: () => void;
 }
@@ -25,7 +26,8 @@ const FoodCard: React.FC<FoodCardProps> = ({
   image,
   gallery,
   badge,
-  toppings,
+  toppingCategoryIds,
+  defaultToppings,
   allowHalfHalf,
 }) => {
   const pizza: PizzaItem = {
@@ -35,7 +37,10 @@ const FoodCard: React.FC<FoodCardProps> = ({
     sizes: sizes && sizes.length > 0 ? sizes : [{ label: "Regular", price: Number(price) || 0 }],
     image,
     gallery,
-    toppings,
+    // Default to "no toppings" when the caller doesn't pass real category data (e.g. offers) —
+    // `undefined` is reserved for MAKE_YOUR_OWN_PIZZA's "show every category" case.
+    toppingCategoryIds: toppingCategoryIds ?? [],
+    defaultToppings,
   };
 
   return (

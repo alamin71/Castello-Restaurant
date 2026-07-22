@@ -66,7 +66,8 @@ const Pizzas = () => {
                             description={pizza.description}
                             badge={pizza.badge}
                             sizes={pizza.sizes}
-                            toppings={pizza.toppings}
+                            toppingCategoryIds={pizza.toppingCategoryIds}
+                            defaultToppings={pizza.defaultToppings}
                             allowHalfHalf
                             image={pizza.image ?? "/assets/pizza.png"}
                             gallery={pizza.gallery}

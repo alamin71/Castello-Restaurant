@@ -27,7 +27,8 @@ export default function CategoryProducts({ categoryName }: { categoryName: strin
                             description={item.description}
                             badge={item.badge}
                             sizes={item.sizes}
-                            toppings={item.toppings}
+                            toppingCategoryIds={item.toppingCategoryIds}
+                            defaultToppings={item.defaultToppings}
                             image={item.image ?? "/assets/pizza.png"}
                             gallery={item.gallery}
                         />

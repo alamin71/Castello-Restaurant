@@ -12,4 +12,8 @@ export const API = {
         offerCategories: "/admin/promotions/offer-categories",
         offers: "/admin/promotions/offers",
     },
+    toppings: {
+        categories: "/admin/menu/toppings/categories",
+        items: "/admin/menu/toppings/items",
+    },
 };

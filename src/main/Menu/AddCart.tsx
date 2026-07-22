@@ -4,6 +4,10 @@ import { isValidElement, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/hooks/queries/useProducts";
+import { useToppingCategories } from "@/hooks/queries/useToppingCategories";
+import { useToppingItems } from "@/hooks/queries/useToppingItems";
+import type { ToppingCategory } from "@/types/toppingCategory.types";
+import type { ToppingItem } from "@/types/toppingItem.types";
 
 import {
     Dialog,
@@ -18,30 +22,48 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { TOPPING_GROUPS, productToMenuItem, type PizzaItem, type Topping, type ToppingGroup, type ToppingPreset } from "./pizzaData";
+import { productToMenuItem, type PizzaItem, type Topping, type ToppingGroup } from "./pizzaData";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const FALLBACK_IMAGE = "/assets/pizza.png";
 
 const formatSizeLabel = (label: string) => label.replace(/in$/i, "″");
 
-function buildGroups(preset?: ToppingPreset[]): ToppingGroup[] {
-    const presetMap = new Map((preset ?? []).map((p) => [p.name, p.price]));
-    return TOPPING_GROUPS.map((group) => ({
-        ...group,
-        items: group.items.map((item) => {
-            const isDefault = presetMap.has(item.name);
-            const realPrice = presetMap.get(item.name);
-            return {
-                ...item,
-                qty: isDefault ? 1 : 0,
-                isDefault,
-                // Prefer the real backend price for this product's default toppings;
-                // fall back to the shared catalog's price for everything else.
-                price: isDefault && realPrice != null ? realPrice : item.price,
-            };
-        }),
-    }));
+// Builds the topping groups this specific pizza should offer, from the real
+// topping-categories/topping-items catalog — `pizza.toppingCategoryIds` (undefined = every
+// category, e.g. "Make Your Own Pizza") picks which groups show, and `pizza.defaultToppings`
+// (matched by real toppingItemId) marks which items are pre-selected with their real price.
+function buildGroups(
+    pizza: PizzaItem,
+    toppingCategories: ToppingCategory[],
+    toppingItems: ToppingItem[]
+): ToppingGroup[] {
+    const relevantCategories =
+        pizza.toppingCategoryIds === undefined
+            ? toppingCategories
+            : toppingCategories.filter((c) => pizza.toppingCategoryIds!.includes(c.toppingCategoryId));
+
+    const defaultMap = new Map((pizza.defaultToppings ?? []).map((d) => [d.toppingItemId, d.price]));
+
+    return relevantCategories
+        .map((category) => ({
+            label: category.name,
+            items: toppingItems
+                .filter((item) => item.toppingCategoryId.toppingCategoryId === category.toppingCategoryId)
+                .map((item) => {
+                    const isDefault = defaultMap.has(item.toppingItemId);
+                    const realPrice = defaultMap.get(item.toppingItemId);
+                    return {
+                        name: item.name,
+                        // Prefer the real backend price for this product's default toppings;
+                        // fall back to the topping catalog's own price for everything else.
+                        price: isDefault && realPrice != null ? realPrice : item.price,
+                        qty: isDefault ? 1 : 0,
+                        isDefault,
+                    };
+                }),
+        }))
+        .filter((group) => group.items.length > 0);
 }
 
 // Default toppings are already baked into the product's base price — removing one is
@@ -65,8 +87,12 @@ interface HalfState {
 
 type HalfSlot = "first" | "second";
 
-function makeHalf(pizza: PizzaItem): HalfState {
-    return { pizza, groups: buildGroups(pizza.toppings) };
+function makeHalf(
+    pizza: PizzaItem,
+    toppingCategories: ToppingCategory[],
+    toppingItems: ToppingItem[]
+): HalfState {
+    return { pizza, groups: buildGroups(pizza, toppingCategories, toppingItems) };
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -214,6 +240,8 @@ export default function AddCartDialog({
 }) {
     const { addToCart } = useCart();
     const { data: products } = useProducts();
+    const { data: toppingCategories } = useToppingCategories();
+    const { data: toppingItems } = useToppingItems();
     const pizzaOptions: PizzaItem[] = (products ?? [])
         .filter((p) => p.categoryId?.name?.toLowerCase() === "pizza")
         .map(productToMenuItem);
@@ -225,7 +253,9 @@ export default function AddCartDialog({
 
     const [mode, setMode] = useState<"single" | "half">(pizza ? "single" : "half");
     const [activeHalf, setActiveHalf] = useState<HalfSlot>("first");
-    const [half1, setHalf1] = useState<HalfState | null>(() => (pizza ? makeHalf(pizza) : null));
+    const [half1, setHalf1] = useState<HalfState | null>(() =>
+        pizza ? makeHalf(pizza, toppingCategories ?? [], toppingItems ?? []) : null
+    );
     const [half2, setHalf2] = useState<HalfState | null>(null);
     const [pickerFor, setPickerFor] = useState<HalfSlot | null>(null);
 
@@ -233,7 +263,7 @@ export default function AddCartDialog({
         if (next) {
             setMode(pizza ? "single" : "half");
             setActiveHalf("first");
-            setHalf1(pizza ? makeHalf(pizza) : null);
+            setHalf1(pizza ? makeHalf(pizza, toppingCategories ?? [], toppingItems ?? []) : null);
             setHalf2(null);
             setPickerFor(null);
             setSelectedSize(0);
@@ -258,7 +288,7 @@ export default function AddCartDialog({
 
     const handleSelectPizza = (chosen: PizzaItem) => {
         if (!pickerFor) return;
-        const half = makeHalf(chosen);
+        const half = makeHalf(chosen, toppingCategories ?? [], toppingItems ?? []);
         if (pickerFor === "first") setHalf1(half);
         else setHalf2(half);
         setActiveHalf(pickerFor);
@@ -311,9 +341,13 @@ export default function AddCartDialog({
     // customer-added toppings dropped.
     const resetToppings = (target: HalfSlot) => {
         if (target === "first") {
-            setHalf1((prev) => (prev ? { ...prev, groups: buildGroups(prev.pizza.toppings) } : prev));
+            setHalf1((prev) =>
+                prev ? { ...prev, groups: buildGroups(prev.pizza, toppingCategories ?? [], toppingItems ?? []) } : prev
+            );
         } else {
-            setHalf2((prev) => (prev ? { ...prev, groups: buildGroups(prev.pizza.toppings) } : prev));
+            setHalf2((prev) =>
+                prev ? { ...prev, groups: buildGroups(prev.pizza, toppingCategories ?? [], toppingItems ?? []) } : prev
+            );
         }
     };
 
@@ -612,66 +646,71 @@ export default function AddCartDialog({
                                                 );
                                             })}
                                         </RadioGroup>
-                                        <Separator />
 
-                                        {/* Topping groups for the currently active half */}
-                                        <div className="flex items-start justify-between px-4 pt-3 sm:px-6">
-                                            <div>
-                                                <h3 className="text-sm font-semibold text-white">Toppings</h3>
-                                                <p className="text-xs text-zinc-500">You can customize toppings</p>
-                                            </div>
-                                            <button
-                                                onClick={() => resetToppings(editTarget)}
-                                                className="cursor-pointer text-xs font-semibold text-secondary hover:underline"
-                                            >
-                                                Reset Toppings
-                                            </button>
-                                        </div>
-                                        <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
-                                            {activeState.groups.map((group, gi) => {
-                                                // Extra qty on top of a default's preset qty of 1 counts the same as a
-                                                // fully new topping — both are billed on top of the base price.
-                                                const extraQty = (t: Topping) =>
-                                                    t.isDefault ? Math.max(0, t.qty - 1) : t.qty;
-                                                const addedQty = group.items.reduce(
-                                                    (sum, t) => sum + extraQty(t),
-                                                    0
-                                                );
-                                                const addedPrice = group.items.reduce(
-                                                    (sum, t) => sum + t.price * extraQty(t),
-                                                    0
-                                                );
+                                        {activeState.groups.length > 0 && (
+                                            <>
+                                                <Separator />
 
-                                                return (
-                                                    <div
-                                                        key={group.label}
-                                                        className="rounded-2xl border-2 border-white/10 p-3 sm:p-4"
-                                                    >
-                                                        <div className="mb-3 flex items-baseline justify-between">
-                                                            <span className="text-sm font-semibold text-white">
-                                                                {group.label}
-                                                            </span>
-                                                            {addedQty > 0 && (
-                                                                <span className="text-[10px] text-secondary">
-                                                                    +{addedQty} Qty · +{addedPrice.toLocaleString()} kr.
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
-                                                            {group.items.map((topping, ti) => (
-                                                                <ToppingCard
-                                                                    key={topping.name}
-                                                                    topping={topping}
-                                                                    onInc={() => updateQty(editTarget, gi, ti, 1)}
-                                                                    onDec={() => updateQty(editTarget, gi, ti, -1)}
-                                                                    onRemove={() => removeTopping(editTarget, gi, ti)}
-                                                                />
-                                                            ))}
-                                                        </div>
+                                                {/* Topping groups for the currently active half */}
+                                                <div className="flex items-start justify-between px-4 pt-3 sm:px-6">
+                                                    <div>
+                                                        <h3 className="text-sm font-semibold text-white">Toppings</h3>
+                                                        <p className="text-xs text-zinc-500">You can customize toppings</p>
                                                     </div>
-                                                );
-                                            })}
-                                        </div>
+                                                    <button
+                                                        onClick={() => resetToppings(editTarget)}
+                                                        className="cursor-pointer text-xs font-semibold text-secondary hover:underline"
+                                                    >
+                                                        Reset Toppings
+                                                    </button>
+                                                </div>
+                                                <div className="space-y-5 px-4 pt-4 pb-10 sm:px-6">
+                                                    {activeState.groups.map((group, gi) => {
+                                                        // Extra qty on top of a default's preset qty of 1 counts the same as a
+                                                        // fully new topping — both are billed on top of the base price.
+                                                        const extraQty = (t: Topping) =>
+                                                            t.isDefault ? Math.max(0, t.qty - 1) : t.qty;
+                                                        const addedQty = group.items.reduce(
+                                                            (sum, t) => sum + extraQty(t),
+                                                            0
+                                                        );
+                                                        const addedPrice = group.items.reduce(
+                                                            (sum, t) => sum + t.price * extraQty(t),
+                                                            0
+                                                        );
+
+                                                        return (
+                                                            <div
+                                                                key={group.label}
+                                                                className="rounded-2xl border-2 border-white/10 p-3 sm:p-4"
+                                                            >
+                                                                <div className="mb-3 flex items-baseline justify-between">
+                                                                    <span className="text-sm font-semibold text-white">
+                                                                        {group.label}
+                                                                    </span>
+                                                                    {addedQty > 0 && (
+                                                                        <span className="text-[10px] text-secondary">
+                                                                            +{addedQty} Qty · +{addedPrice.toLocaleString()} kr.
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-2">
+                                                                    {group.items.map((topping, ti) => (
+                                                                        <ToppingCard
+                                                                            key={topping.name}
+                                                                            topping={topping}
+                                                                            onInc={() => updateQty(editTarget, gi, ti, 1)}
+                                                                            onDec={() => updateQty(editTarget, gi, ti, -1)}
+                                                                            onRemove={() => removeTopping(editTarget, gi, ti)}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </div>
