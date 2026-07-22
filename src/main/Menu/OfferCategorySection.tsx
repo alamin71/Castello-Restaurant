@@ -33,6 +33,7 @@ export default function OfferCategorySection({
                             price={offer.price}
                             image={offer.mainImage}
                             gallery={offer.gallery}
+                            offerId={offer._id}
                         />
                     ))}
             </div>

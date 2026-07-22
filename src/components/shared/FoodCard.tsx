@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import AddCartDialog from "@/main/Menu/AddCart";
+import OfferAddCartDialog from "@/main/Menu/OfferAddCart";
 import type { DefaultToppingSelection, PizzaItem, SizeOption } from "@/main/Menu/pizzaData";
 
 export interface FoodCardProps {
@@ -15,6 +16,8 @@ export interface FoodCardProps {
   toppingCategoryIds?: string[];
   defaultToppings?: DefaultToppingSelection[];
   allowHalfHalf?: boolean;
+  // Set for offer cards — routes "Add to Cart" to the bundle picker instead of the single-item dialog.
+  offerId?: string;
   onAdd?: () => void;
 }
 
@@ -29,6 +32,7 @@ const FoodCard: React.FC<FoodCardProps> = ({
   toppingCategoryIds,
   defaultToppings,
   allowHalfHalf,
+  offerId,
 }) => {
   const pizza: PizzaItem = {
     title,
@@ -111,7 +115,18 @@ const FoodCard: React.FC<FoodCardProps> = ({
             </p>
           )}
 
-          <AddCartDialog variant="full" pizza={pizza} allowHalfHalf={allowHalfHalf} />
+          {offerId ? (
+            <OfferAddCartDialog
+              offerId={offerId}
+              trigger={
+                <button className="w-full h-10 flex items-center justify-center rounded-full bg-[#222222] text-white text-sm font-semibold hover:bg-[#2c2c2c] active:scale-95 transition-all cursor-pointer">
+                  Add to Cart
+                </button>
+              }
+            />
+          ) : (
+            <AddCartDialog variant="full" pizza={pizza} allowHalfHalf={allowHalfHalf} />
+          )}
         </div>
       </div>
     </div>
