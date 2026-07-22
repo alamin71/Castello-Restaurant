@@ -21,7 +21,7 @@ export default function OfferCategorySection({
 
     return (
         <Container className="py-12">
-            <h2 className="text-white text-[32px] text-left font-bold mb-12">{categoryName}</h2>
+            <h2 className="text-white text-[32px] text-left font-bold my-12">{categoryName}</h2>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {isLoading
                     ? Array.from({ length: 4 }).map((_, i) => <FoodCardSkeleton key={i} />)
