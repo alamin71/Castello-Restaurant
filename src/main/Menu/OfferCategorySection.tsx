@@ -20,7 +20,7 @@ export default function OfferCategorySection({
     if (!isLoading && items.length === 0) return null;
 
     return (
-        <Container className="py-12">
+        <Container className="mb-12">
             <h2 className="text-white text-[32px] text-left font-bold my-12">{categoryName}</h2>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {isLoading
