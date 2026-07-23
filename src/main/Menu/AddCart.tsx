@@ -509,7 +509,7 @@ export default function AddCartDialog({
                                                             id={`size-${i}`}
                                                             className="sr-only"
                                                         />
-                                                        <span className="text-base font-bold text-white">
+                                                        <span className="text-base font-bold leading-none text-white">
                                                             {s.price.toLocaleString()} kr.
                                                             {s.originalPrice && (
                                                                 <span className="ml-2 text-sm font-normal text-zinc-500 line-through">
@@ -517,7 +517,7 @@ export default function AddCartDialog({
                                                                 </span>
                                                             )}
                                                         </span>
-                                                        <span className="text-sm text-zinc-400">
+                                                        <span className="text-sm leading-none text-zinc-400">
                                                             {formatSizeLabel(s.label)}
                                                         </span>
                                                     </Label>
