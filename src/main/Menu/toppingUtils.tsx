@@ -86,7 +86,7 @@ export function ToppingCard({
                 </span>
             )}
             {isDefaultRemoved && (
-                <span className="absolute top-0 right-0 rounded-bl-lg bg-red-500 px-2 py-0.5 text-[9px] font-bold text-white leading-tight">
+                <span className="absolute top-0 right-0 rounded-bl-lg bg-red-500 px-2 py-0.5 text-sm font-bold text-white leading-tight">
                     ×
                 </span>
             )}
