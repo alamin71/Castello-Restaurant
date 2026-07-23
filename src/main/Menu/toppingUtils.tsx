@@ -67,17 +67,27 @@ export function ToppingCard({
     const active = topping.qty > 0;
     const isDefaultActive = !!topping.isDefault && active;
     const isAddedActive = !topping.isDefault && active;
+    // A default topping the customer explicitly excluded — gets its own red "removed" marker
+    // instead of just reverting to the plain unselected look.
+    const isDefaultRemoved = !!topping.isDefault && !active;
 
     return (
         <div
             className={`relative overflow-hidden rounded-lg border p-2 transition-colors ${active
                 ? "border-secondary"
-                : "border-white/20"
+                : isDefaultRemoved
+                    ? "border-red-500"
+                    : "border-white/20"
                 }`}
         >
             {isAddedActive && (
                 <span className="absolute top-0 right-0 rounded-bl-lg bg-secondary px-2 py-0.5 text-[9px] font-bold text-white leading-tight">
                     New
+                </span>
+            )}
+            {isDefaultRemoved && (
+                <span className="absolute top-0 right-0 rounded-bl-lg bg-red-500 px-2 py-0.5 text-[9px] font-bold text-white leading-tight">
+                    ×
                 </span>
             )}
             <p className="text-sm leading-tight ">{topping.name}</p>
