@@ -178,3 +178,41 @@ export function ToppingGroupSection({
         </div>
     );
 }
+
+// Inline "− Bacon, Chicken, 2 × Ham, +2 × Sauce" style summary of a product's topping picks —
+// only toppings that are either default or were added show up. Shared by the offer bundle's
+// slot rows and the cart sheet's per-item breakdown.
+export function ToppingSummaryLine({ groups, className = "" }: { groups: ToppingGroup[]; className?: string }) {
+    const chips = groups.flatMap((g) => g.items.filter((t) => t.isDefault || t.qty > 0));
+    if (chips.length === 0) return null;
+
+    const extraQty = groups.reduce(
+        (sum, g) => sum + g.items.reduce((s, t) => s + (t.isDefault ? Math.max(0, t.qty - 1) : t.qty), 0),
+        0
+    );
+    const extraPrice = toppingsTotal(groups);
+
+    return (
+        <div className={className}>
+            <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs">
+                {chips.map((t) => {
+                    const removed = t.isDefault && t.qty === 0;
+                    const extra = t.isDefault ? t.qty - 1 : t.qty;
+                    return (
+                        <span
+                            key={t.name}
+                            className={removed ? "text-red-500" : extra > 0 ? "text-secondary" : "text-zinc-400"}
+                        >
+                            {removed ? `− ${t.name}` : extra > 0 ? `${t.qty} × ${t.name}` : t.name}
+                        </span>
+                    );
+                })}
+            </div>
+            {extraQty > 0 && (
+                <p className="mt-1 text-xs text-zinc-500">
+                    +{extraQty} toppings · +{extraPrice.toLocaleString()} kr.
+                </p>
+            )}
+        </div>
+    );
+}

@@ -258,22 +258,23 @@ export default function AddCartDialog({
     const handleAddToCart = () => {
         if (!canAddToCart) return;
 
-        const name =
-            mode === "half" && half1 && half2
-                ? `Half & Half: ${half1.pizza.title} + ${half2.pizza.title}`
-                : half1?.pizza.title ?? "Pizza";
-
-        const description =
-            mode === "half" && half1 && half2
-                ? `${formatSizeLabel(half1.pizza.sizes[selectedSize]?.label ?? "")} · 1st: ${half1.pizza.description} — 2nd: ${half2.pizza.description}`
-                : `${formatSizeLabel(half1?.pizza.sizes[selectedSize]?.label ?? "")} · ${half1?.pizza.description ?? ""}`;
+        const isHalfHalf = mode === "half" && half1 && half2;
+        const name = isHalfHalf
+            ? `Half & Half: ${half1.pizza.title} + ${half2.pizza.title}`
+            : half1?.pizza.title ?? "Pizza";
+        const variantLabel = formatSizeLabel(half1?.pizza.sizes[selectedSize]?.label ?? "");
 
         addToCart({
             name,
-            description,
+            variantLabel,
             image: half1?.pizza.image ?? half2?.pizza.image ?? FALLBACK_IMAGE,
             quantity: cartQty,
             price: basePrice + toppingsSum,
+            // Half & half combines two independent topping sets — fall back to plain text
+            // rather than trying to squeeze both into one chip summary.
+            ...(isHalfHalf
+                ? { description: `1st: ${half1.pizza.description} — 2nd: ${half2.pizza.description}` }
+                : { toppingGroups: half1?.groups }),
         });
 
         toast.success(`${name} added to cart!`);

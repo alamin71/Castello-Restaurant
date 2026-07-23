@@ -2,13 +2,35 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Cart from "../../../public/icons/cart";
 import Image from "next/image";
 import Link from "next/link";
+import { ToppingSummaryLine } from "@/main/Menu/toppingUtils";
+import type { CartBundleSubItem } from "@/store/cart.store";
+
+function BundleSubItemRow({ item }: { item: CartBundleSubItem }) {
+    return (
+        <div className="flex items-start gap-2">
+            <Image
+                src={item.image}
+                alt={item.name}
+                className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                width={40}
+                height={40}
+            />
+            <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-white leading-tight wrap-break-word">{item.name}</p>
+                {item.variantLabel && <p className="text-[11px] text-zinc-500">{item.variantLabel}</p>}
+                {item.toppingGroups && (
+                    <ToppingSummaryLine groups={item.toppingGroups} className="mt-1" />
+                )}
+            </div>
+        </div>
+    );
+}
 
 export default function OrderCartSheet() {
     const { isLoggedIn, openLoginModal } = useAuth();
@@ -71,56 +93,73 @@ export default function OrderCartSheet() {
                                         />
 
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between gap-2 mb-2">
-                                                <h3 className="text-sm font-semibold text-white leading-tight wrap-break-word">
-                                                    {item.name}
-                                                </h3>
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0">
+                                                    <h3 className="text-sm font-semibold text-white leading-tight wrap-break-word">
+                                                        {item.name}
+                                                    </h3>
+                                                    {item.variantLabel && (
+                                                        <p className="text-xs text-zinc-500">{item.variantLabel}</p>
+                                                    )}
+                                                </div>
                                                 <Trash2
-                                                    className="size-5 text-secondary cursor-pointer"
+                                                    className="size-5 shrink-0 text-secondary cursor-pointer"
                                                     onClick={() => removeItem(item.id)}
                                                 />
                                             </div>
 
-                                            <p className="mt-0.5 text-xs text-zinc-400 wrap-break-word">
-                                                {item.description}
-                                            </p>
+                                            {item.description && (
+                                                <p className="mt-0.5 text-xs text-zinc-400 wrap-break-word">
+                                                    {item.description}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
-                                    {/* Bottom row: checkbox + qty + price */}
-                                    <div className="mt-3 flex items-center justify-between gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <Checkbox className="border-secondary data-[state=checked]:border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-white shrink-0" />
+                                    {/* Topping breakdown for a plain product */}
+                                    {item.toppingGroups && (
+                                        <ToppingSummaryLine groups={item.toppingGroups} className="mt-2" />
+                                    )}
 
-                                            <div className="flex items-center rounded-md border border-white/20">
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    className="h-7 w-7 text-white hover:bg-secondary"
-                                                    onClick={() => updateQuantity(item.id, -1)}
-                                                >
-                                                    <Minus className="h-3 w-3" />
-                                                </Button>
-                                                <span className="w-6 text-center text-sm font-medium text-white">
-                                                    {item.quantity}
-                                                </span>
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    className="h-7 w-7 text-white hover:bg-secondary"
-                                                    onClick={() => updateQuantity(item.id, 1)}
-                                                >
-                                                    <Plus className="h-3 w-3" />
-                                                </Button>
-                                            </div>
+                                    {/* Bundled products for an offer */}
+                                    {item.bundleItems && item.bundleItems.length > 0 && (
+                                        <div className="mt-3 space-y-3 border-t border-white/10 pt-3">
+                                            {item.bundleItems.map((sub, i) => (
+                                                <BundleSubItemRow key={`${sub.name}-${i}`} item={sub} />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Bottom row: qty + price */}
+                                    <div className="mt-3 flex items-center justify-between gap-2">
+                                        <div className="flex items-center rounded-md border border-white/20">
+                                            <Button
+                                                size="icon"
+                                                variant="ghost"
+                                                className="h-7 w-7 text-white hover:bg-secondary"
+                                                onClick={() => updateQuantity(item.id, -1)}
+                                            >
+                                                <Minus className="h-3 w-3" />
+                                            </Button>
+                                            <span className="w-6 text-center text-sm font-medium text-white">
+                                                {item.quantity}
+                                            </span>
+                                            <Button
+                                                size="icon"
+                                                variant="ghost"
+                                                className="h-7 w-7 text-white hover:bg-secondary"
+                                                onClick={() => updateQuantity(item.id, 1)}
+                                            >
+                                                <Plus className="h-3 w-3" />
+                                            </Button>
                                         </div>
 
                                         <div className="text-right shrink-0">
                                             <p className="text-sm font-semibold text-white">
-                                                {item.price * item.quantity} ISK.
+                                                {(item.price * item.quantity).toLocaleString()} kr.
                                             </p>
                                             <p className="text-xs text-zinc-400">
-                                                {item.price} × {item.quantity}
+                                                {item.price.toLocaleString()} × {item.quantity}
                                             </p>
                                         </div>
                                     </div>
@@ -133,7 +172,7 @@ export default function OrderCartSheet() {
                     <div className="shrink-0 border-t border-white/20 bg-primary px-4 py-4">
                         <div className="mb-3 flex items-center justify-between text-base sm:text-lg font-semibold text-white">
                             <span>{cartItems.length} Items</span>
-                            <span>{subtotal} ISK.</span>
+                            <span>{subtotal.toLocaleString()} kr.</span>
                         </div>
                         <Separator className="mb-4 bg-white/10" />
                         <SheetClose asChild>

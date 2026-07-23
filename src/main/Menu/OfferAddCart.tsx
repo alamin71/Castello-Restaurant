@@ -21,7 +21,7 @@ import { useProducts } from "@/hooks/queries/useProducts";
 import { useCategories } from "@/hooks/queries/useCategories";
 import { useToppingCategories } from "@/hooks/queries/useToppingCategories";
 import { useToppingItems } from "@/hooks/queries/useToppingItems";
-import { buildGroups, ToppingGroupSection, toppingsTotal } from "./toppingUtils";
+import { buildGroups, ToppingGroupSection, ToppingSummaryLine, toppingsTotal } from "./toppingUtils";
 import type { ToppingGroup } from "./pizzaData";
 import type {
     OfferItemDetail,
@@ -65,43 +65,6 @@ function buildSlotGroups(
         },
         toppingCategories,
         toppingItems
-    );
-}
-
-// Inline "− Bacon, Chicken, 2 × Ham, +2 × Sauce" style summary of a slot's topping picks —
-// only toppings that are either default or were added show up.
-function ToppingSummaryLine({ groups }: { groups: ToppingGroup[] }) {
-    const chips = groups.flatMap((g) => g.items.filter((t) => t.isDefault || t.qty > 0));
-    if (chips.length === 0) return null;
-
-    const extraQty = groups.reduce(
-        (sum, g) => sum + g.items.reduce((s, t) => s + (t.isDefault ? Math.max(0, t.qty - 1) : t.qty), 0),
-        0
-    );
-    const extraPrice = toppingsTotal(groups);
-
-    return (
-        <div className="px-4 pb-3">
-            <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs">
-                {chips.map((t) => {
-                    const removed = t.isDefault && t.qty === 0;
-                    const extra = t.isDefault ? t.qty - 1 : t.qty;
-                    return (
-                        <span
-                            key={t.name}
-                            className={removed ? "text-red-500" : extra > 0 ? "text-secondary" : "text-zinc-400"}
-                        >
-                            {removed ? `− ${t.name}` : extra > 0 ? `${t.qty} × ${t.name}` : t.name}
-                        </span>
-                    );
-                })}
-            </div>
-            {extraQty > 0 && (
-                <p className="mt-1 text-xs text-zinc-500">
-                    +{extraQty} toppings · +{extraPrice.toLocaleString()} kr.
-                </p>
-            )}
-        </div>
     );
 }
 
@@ -254,17 +217,25 @@ export default function OfferAddCartDialog({
 
     const handleAddToCart = () => {
         if (!offer || !canAddToCart) return;
-        const parts = offer.offerItems.map((item, i) => {
-            const sel = getSlotSelection(item, i);
-            return sel ? `${sel.product.name}${sel.variant ? ` (${sel.variant.name})` : ""}` : "";
+        const bundleItems = offer.offerItems.flatMap((item, i) => {
+            const sel = slotSelections[i];
+            if (!sel) return [];
+            return [
+                {
+                    name: sel.product.name,
+                    variantLabel: sel.variant?.name,
+                    image: sel.product.mainImage,
+                    toppingGroups: sel.groups.length > 0 ? sel.groups : undefined,
+                },
+            ];
         });
 
         addToCart({
             name: offer.title,
-            description: parts.filter(Boolean).join(", "),
             image: offer.mainImage,
             quantity: cartQty,
             price: offer.price + toppingsSum,
+            bundleItems,
         });
 
         toast.success(`${offer.title} added to cart!`);
@@ -533,7 +504,7 @@ export default function OfferAddCartDialog({
                                                             Edit
                                                         </button>
                                                     </div>
-                                                    <ToppingSummaryLine groups={sel.groups} />
+                                                    <ToppingSummaryLine groups={sel.groups} className="px-4 pb-3" />
                                                 </div>
                                             );
                                         })}
