@@ -96,13 +96,14 @@ export function ToppingCard({
                             >
                                 ×
                             </button>
-                            <button
-                                onClick={onDec}
-                                disabled={topping.qty <= 1}
-                                className="flex h-8 w-8 items-center justify-center rounded text-lg text-white transition-colors enabled:cursor-pointer enabled:hover:bg-zinc-600 disabled:opacity-30"
-                            >
-                                −
-                            </button>
+                            {topping.qty > 1 && (
+                                <button
+                                    onClick={onDec}
+                                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg text-white transition-colors hover:bg-zinc-600"
+                                >
+                                    −
+                                </button>
+                            )}
                         </>
                     )}
                     {isAddedActive && (
