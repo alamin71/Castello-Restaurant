@@ -9,11 +9,11 @@ import {
     Phone,
     User,
     Circle,
+    ShoppingCart,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -26,42 +26,30 @@ import giro from "../../../public/icons/giro";
 import Card from "../../../public/icons/card";
 import Aur from "../../../public/icons/aur";
 import Cash from "../../../public/icons/cash";
+import { useCart } from "@/context/CartContext";
+import { ToppingSummaryLine } from "@/main/Menu/toppingUtils";
+import type { CartBundleSubItem } from "@/store/cart.store";
 
-type CartItem = {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    quantity: number;
-    price: number;
-};
-
-const initialCartItems: CartItem[] = [
-    {
-        id: 1,
-        name: "Durum Kebab w/chicken",
-        description: "Chicken, cabbage, cucumber, tomatoes, red onion",
-        image: "/assets/pizza.png",
-        quantity: 2,
-        price: 960,
-    },
-    {
-        id: 2,
-        name: "The front page pizza",
-        description: "Pepperoni, Bacon, Paprika, Garlic Sauce, Basil",
-        image: "/assets/pizza.png",
-        quantity: 2,
-        price: 960,
-    },
-    {
-        id: 3,
-        name: "Coke",
-        description: "2L",
-        image: "/assets/pizza.png",
-        quantity: 2,
-        price: 960,
-    },
-];
+function BundleSubItemRow({ item }: { item: CartBundleSubItem }) {
+    return (
+        <div className="flex items-start gap-2">
+            <Image
+                src={item.image}
+                alt={item.name}
+                className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                width={40}
+                height={40}
+            />
+            <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-white leading-tight wrap-break-word">{item.name}</p>
+                {item.variantLabel && <p className="text-[11px] text-white/70">{item.variantLabel}</p>}
+                {item.toppingGroups && (
+                    <ToppingSummaryLine groups={item.toppingGroups} className="mt-1" />
+                )}
+            </div>
+        </div>
+    );
+}
 
 const paymentMethods = [
     { id: "card", title: "Card payment", icon: Card },
@@ -80,21 +68,7 @@ export default function CompleteOrder() {
         email: "jon.sigurdsson@gmail.com",
         phone: "+354 661 4821",
     });
-    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
-
-    const updateQuantity = (id: number, delta: number) => {
-        setCartItems((prev) =>
-            prev
-                .map((item) =>
-                    item.id === id ? { ...item, quantity: item.quantity + delta } : item
-                )
-                .filter((item) => item.quantity > 0)
-        );
-    };
-
-    const removeItem = (id: number) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
-    };
+    const { cartItems, updateQuantity, removeItem } = useCart();
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const deliveryFee = 1000;
@@ -115,12 +89,25 @@ export default function CompleteOrder() {
                 </div>
             </div>
 
-            {/*
-             *  RESPONSIVE GRID
-             *  mobile  (<sm)  : 1 col  — all sections stack vertically
-             *  tablet  (sm)   : 2 cols — cart | details+payment stacked
-             *  desktop (lg+)  : 3 cols — cart | details | payment
-             */}
+            {cartItems.length === 0 ? (
+                <div className="mx-auto flex w-11/12 md:w-10/12 flex-col items-center justify-center gap-4 px-4 py-20 text-center sm:px-6">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
+                        <ShoppingCart className="h-7 w-7 text-white" />
+                    </div>
+                    <div>
+                        <p className="text-lg font-semibold">Your cart is empty</p>
+                        <p className="mt-1 text-sm text-white/70">
+                            Add something from the menu to continue your order.
+                        </p>
+                    </div>
+                    <Link
+                        href="/"
+                        className="mt-2 rounded-2xl bg-secondary px-6 py-3 text-sm font-semibold hover:bg-secondary/90"
+                    >
+                        Continue to Home
+                    </Link>
+                </div>
+            ) : (
             <div className="mx-auto w-11/12 md:w-10/12 px-4 sm:px-6 py-6
                             grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
 
@@ -156,9 +143,16 @@ export default function CompleteOrder() {
                                                     <h3 className="truncate text-sm font-semibold">
                                                         {item.name}
                                                     </h3>
-                                                    <p className="truncate text-xs text-white/70">
-                                                        {item.description}
-                                                    </p>
+                                                    {item.variantLabel && (
+                                                        <p className="truncate text-xs text-white/70">
+                                                            {item.variantLabel}
+                                                        </p>
+                                                    )}
+                                                    {item.description && (
+                                                        <p className="truncate text-xs text-white/70">
+                                                            {item.description}
+                                                        </p>
+                                                    )}
                                                 </div>
                                                 <Button
                                                     size="icon"
@@ -170,39 +164,49 @@ export default function CompleteOrder() {
                                                 </Button>
                                             </div>
 
+                                            {/* Topping breakdown for a plain product */}
+                                            {item.toppingGroups && (
+                                                <ToppingSummaryLine groups={item.toppingGroups} />
+                                            )}
+
+                                            {/* Bundled products for an offer */}
+                                            {item.bundleItems && item.bundleItems.length > 0 && (
+                                                <div className="space-y-3 border-t border-white/10 pt-3">
+                                                    {item.bundleItems.map((sub, i) => (
+                                                        <BundleSubItemRow key={`${sub.name}-${i}`} item={sub} />
+                                                    ))}
+                                                </div>
+                                            )}
+
                                             {/* Controls + price */}
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <Checkbox className="border-secondary data-[state=checked]:border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-white shrink-0" />
-
-                                                    <div className="flex items-center rounded-md border border-white/20">
-                                                        <Button
-                                                            size="icon"
-                                                            variant="ghost"
-                                                            onClick={() => updateQuantity(item.id, -1)}
-                                                            className="h-7 w-7 text-white hover:bg-secondary"
-                                                        >
-                                                            <Minus className="h-3 w-3" />
-                                                        </Button>
-                                                        <span className="w-6 text-center text-sm font-medium text-white">
-                                                            {item.quantity}
-                                                        </span>
-                                                        <Button
-                                                            size="icon"
-                                                            variant="ghost"
-                                                            onClick={() => updateQuantity(item.id, 1)}
-                                                            className="h-7 w-7 text-white hover:bg-secondary"
-                                                        >
-                                                            <Plus className="h-3 w-3" />
-                                                        </Button>
-                                                    </div>
+                                                <div className="flex items-center rounded-md border border-white/20">
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        onClick={() => updateQuantity(item.id, -1)}
+                                                        className="h-7 w-7 text-white hover:bg-secondary"
+                                                    >
+                                                        <Minus className="h-3 w-3" />
+                                                    </Button>
+                                                    <span className="w-6 text-center text-sm font-medium text-white">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        onClick={() => updateQuantity(item.id, 1)}
+                                                        className="h-7 w-7 text-white hover:bg-secondary"
+                                                    >
+                                                        <Plus className="h-3 w-3" />
+                                                    </Button>
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-sm font-semibold">
-                                                        {item.price * item.quantity} ISK.
+                                                        {(item.price * item.quantity).toLocaleString()} kr.
                                                     </p>
                                                     <p className="text-xs text-white/70">
-                                                        {item.price} × {item.quantity}
+                                                        {item.price.toLocaleString()} × {item.quantity}
                                                     </p>
                                                 </div>
                                             </div>
@@ -402,6 +406,7 @@ export default function CompleteOrder() {
                     </section>
                 </div>
             </div>
+            )}
 
             {/* ── DIALOGS ── */}
             <SelectBranchDialog
